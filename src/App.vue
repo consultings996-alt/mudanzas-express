@@ -8,13 +8,12 @@ import FaqAccordion from './components/FaqAccordion.vue'
 import FooterLocation from './components/FooterLocation.vue'
 import WhatsappFloat from './components/WhatsappFloat.vue'
 
-// Control de vistas y menú móvil
 const vistaActual = ref('inicio')
 const menuAbierto = ref(false)
 
 const cambiarVista = (vista) => {
   vistaActual.value = vista
-  menuAbierto.value = false // Cierra el menú móvil al hacer clic
+  menuAbierto.value = false
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
@@ -22,18 +21,15 @@ const cambiarVista = (vista) => {
 <template>
   <div class="page-layout">
     
-    <!-- MENÚ SUPERIOR RESPONSIVO -->
     <header class="main-header">
       <div class="logo" @click="cambiarVista('inicio')">Mudanzas Express</div>
       
-      <!-- Botón Hamburguesa para Móviles -->
       <button class="hamburger" @click="menuAbierto = !menuAbierto" aria-label="Abrir menú">
         <span></span>
         <span></span>
         <span></span>
       </button>
 
-      <!-- Navegación -->
       <nav class="main-nav" :class="{ 'is-open': menuAbierto }">
         <a href="#" @click.prevent="cambiarVista('servicios')" :class="{ activo: vistaActual === 'servicios' }">SERVICIOS</a>
         <a href="#" @click.prevent="cambiarVista('garantia')" :class="{ activo: vistaActual === 'garantia' }">GARANTÍA</a>
@@ -43,7 +39,6 @@ const cambiarVista = (vista) => {
       </nav>
     </header>
 
-    <!-- CONTENEDOR CENTRAL DINÁMICO -->
     <main class="main-content">
       <HeroForm v-if="vistaActual === 'inicio'" />
       <Services v-if="vistaActual === 'servicios'" />
@@ -52,10 +47,7 @@ const cambiarVista = (vista) => {
       <FaqAccordion v-if="vistaActual === 'preguntas'" />
     </main>
 
-    <!-- PIE DE PÁGINA -->
     <FooterLocation />
-
-    <!-- WHATSAPP FLOTANTE -->
     <WhatsappFloat />
 
   </div>
@@ -66,7 +58,7 @@ const cambiarVista = (vista) => {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  font-family: 'Arial', sans-serif;
+  font-family: var(--font-body);
   background-color: #fff;
 }
 .main-content {
@@ -75,12 +67,11 @@ const cambiarVista = (vista) => {
   flex-direction: column;
 }
 
-/* MENÚ SUPERIOR */
 .main-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 5%;
+  padding: 1.2rem 5%;
   background-color: #ffffff;
   border-bottom: 1px solid #eaeaea;
   position: sticky;
@@ -88,8 +79,8 @@ const cambiarVista = (vista) => {
   z-index: 1000;
 }
 .logo {
-  font-size: 1.6rem;
-  font-family: 'Times New Roman', serif;
+  font-size: 1.8rem;
+  font-family: var(--font-title);
   font-weight: 700;
   color: #000;
   cursor: pointer;
@@ -98,12 +89,12 @@ const cambiarVista = (vista) => {
 .main-nav {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem;
 }
 .main-nav a {
   text-decoration: none;
   color: #666;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 0.5px;
   transition: color 0.3s ease;
@@ -114,18 +105,17 @@ const cambiarVista = (vista) => {
   border-bottom: 2px solid #000;
 }
 .btn-nav-cotizar {
-  background-color: #0d1117;
+  background-color: var(--color-dark);
   color: #ffffff;
   border: none;
-  padding: 0.7rem 1.5rem;
-  font-size: 0.8rem;
+  padding: 0.8rem 1.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   letter-spacing: 1px;
   cursor: pointer;
   border-radius: 2px;
 }
 
-/* BOTÓN HAMBURGUESA (Oculto en desktop) */
 .hamburger {
   display: none;
   flex-direction: column;
@@ -146,8 +136,7 @@ const cambiarVista = (vista) => {
   transition: all 0.3s ease;
 }
 
-/* MEDIA QUERIES PARA DISEÑO RESPONSIVO PROFESIONAL */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .hamburger {
     display: flex;
   }
@@ -156,7 +145,7 @@ const cambiarVista = (vista) => {
     top: 0;
     right: -100%;
     width: 75%;
-    max-width: 300px;
+    max-width: 320px;
     height: 100vh;
     background-color: #ffffff;
     flex-direction: column;

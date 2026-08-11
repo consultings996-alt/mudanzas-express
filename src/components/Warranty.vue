@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue'
 
-// Protocolos de seguridad dinámicos para facilitar su mantenimiento
 const protocolos = ref([
   {
     titulo: 'Emplayado e Inventariado Sistemático',
@@ -28,7 +27,6 @@ const protocolos = ref([
           Construimos procesos claros de mudanza basados en la honestidad, la puntualidad y la seguridad física de tu patrimonio en cada kilómetro del trayecto.
         </p>
         
-        <!-- Lista de Protocolos con Icono de Verificación -->
         <div class="protocols-list">
           <div v-for="(item, index) in protocolos" :key="index" class="protocol-item">
             <span class="check-icon">✓</span>
@@ -44,9 +42,8 @@ const protocolos = ref([
 </template>
 
 <style scoped>
-/* Fondo oscuro contrastante basado en tu diseño */
 .warranty-section { 
-  background-color: var(--color-dark, #0c0c0c); 
+  background-color: var(--color-dark); 
   color: #ffffff; 
   padding: 6rem 2rem; 
 }
@@ -70,10 +67,11 @@ h2 {
   line-height: 1.2; 
   margin: 1rem 0 1.5rem 0; 
   font-weight: normal;
+  font-family: var(--font-title);
 }
 h2 span { 
   font-style: italic; 
-  color: var(--color-primary, #c62828); 
+  color: var(--color-primary); 
 }
 .intro { 
   color: #aaa; 
@@ -83,7 +81,6 @@ h2 span {
   font-size: 1.05rem; 
 }
 
-/* Contenedor de la lista */
 .protocols-list { 
   display: flex; 
   flex-direction: column; 
@@ -100,9 +97,8 @@ h2 span {
   padding-bottom: 0;
 }
 
-/* Icono de check estilizado con el color de la marca */
 .check-icon { 
-  color: var(--color-primary, #c62828); 
+  color: var(--color-primary); 
   font-weight: bold; 
   font-size: 1.3rem; 
   margin-top: 0.2rem;
@@ -111,7 +107,7 @@ h2 span {
   font-size: 1.3rem; 
   margin-bottom: 0.6rem; 
   color: #fff;
-  font-family: var(--font-body); /* Mantenemos fuente limpia en subtítulos internos */
+  font-family: var(--font-body);
   font-weight: 600;
 }
 .protocol-text p { 
@@ -120,7 +116,6 @@ h2 span {
   font-size: 0.95rem; 
 }
 
-/* Adaptabilidad para pantallas móviles */
 @media (max-width: 768px) {
   h2 { font-size: 2.2rem; }
   .warranty-section { padding: 4rem 1.5rem; }

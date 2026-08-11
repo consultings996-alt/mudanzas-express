@@ -1,5 +1,5 @@
 <script setup>
-import { ref, nextTick, onMounted, onUnmounted } from 'vue'
+import { ref, nextTick, onUnmounted } from 'vue'
 import L from 'leaflet'
 
 const nombre = ref('')
@@ -9,14 +9,12 @@ const destinoText = ref('')
 const servicio = ref('Mudanza Residencial Completa')
 const detalles = ref('')
 
-// Control del mapa modal y selección de campo activo
 const mostrarMapaModal = ref(false)
 const cargandoGPS = ref(false)
 const campoActivo = ref('') 
 let mapaModalInstancia = null
 let marcadorModalInstancia = null
 
-// Coordenadas reactivas para el pin móvil del modal
 const latActual = ref(19.432608)
 const lngActual = ref(-99.133208)
 
@@ -140,6 +138,14 @@ const cerrarModal = () => {
   }
 }
 
+// CORRECCIÓN: Limpieza de instancias Leaflet ante desmontajes inesperados
+onUnmounted(() => {
+  if (mapaModalInstancia) {
+    mapaModalInstancia.remove()
+    mapaModalInstancia = null
+  }
+})
+
 const enviarCotizacion = () => {
   const numeroEmpresa = '522381366979'
   const linkOrigen = origenCoords.value ? `https://www.google.com/maps/search/?api=1&query=${origenCoords.value.lat},${origenCoords.value.lng}` : 'No definido'
@@ -226,7 +232,6 @@ const enviarCotizacion = () => {
       </div>
     </div>
 
-    <!-- MODAL DE MAPA INTERACTIVO -->
     <div v-if="mostrarMapaModal" class="modal-overlay">
       <div class="modal-card">
         <div class="modal-header">
@@ -247,11 +252,11 @@ const enviarCotizacion = () => {
 </template>
 
 <style scoped>
-.hero-section { flex: 1; display: flex; align-items: center; background-color: #f9f9f9; padding: 3rem 5%; box-sizing: border-box; width: 100%; }
+.hero-section { flex: 1; display: flex; align-items: center; background-color: var(--color-bg-light); padding: 3rem 5%; box-sizing: border-box; width: 100%; }
 .hero-container { max-width: 1300px; width: 100%; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 4rem; align-items: center; }
 .hero-left, .hero-right { flex: 1; min-width: 320px; }
-h1 { font-size: 3.2rem; line-height: 1.1; margin: 1rem 0; font-family: 'Times New Roman', serif; }
-h1 span { color: #c62828; font-style: italic; }
+h1 { font-size: 3.2rem; line-height: 1.1; margin: 1rem 0; font-family: var(--font-title); }
+h1 span { color: var(--color-primary); font-style: italic; }
 .description { color: #555; line-height: 1.6; margin-bottom: 2rem; font-size: 1.05rem; }
 .tagline { color: #888; font-weight: bold; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 0.5rem;}
 .rating-box { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;}
@@ -260,21 +265,20 @@ h1 span { color: #c62828; font-style: italic; }
 .count { color: #777;}
 
 .form-card { background: #fff; padding: 2rem; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 1px solid #eaeaea; }
-.form-card h3 { font-size: 1.6rem; margin: 0 0 0.5rem 0; font-family: 'Times New Roman', serif; }
+.form-card h3 { font-size: 1.6rem; margin: 0 0 0.5rem 0; font-family: var(--font-title); }
 .form-subtitle { color: #666; font-size: 0.9rem; margin-bottom: 1.5rem;}
 form label { display: block; font-size: 0.75rem; font-weight: bold; color: #444; margin-bottom: 0.4rem; }
-form input, form select, form textarea { width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 0.95rem; }
+form input, form select, form textarea { width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 0.95rem; font-family: var(--font-body); }
 form textarea { height: 60px; resize: none; }
 .split-row { display: flex; gap: 1rem; }
 .distance-badge { background-color: #f0fdf4; color: #166534; padding: 0.7rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid #bbf7d0; text-align: center; }
-.btn-submit { width: 100%; background-color: #c62828; color: white; border: none; padding: 1.1rem; font-weight: bold; font-size: 0.95rem; border-radius: 4px; cursor: pointer; }
+.btn-submit { width: 100%; background-color: var(--color-primary); color: white; border: none; padding: 1.1rem; font-weight: bold; font-size: 0.95rem; border-radius: 4px; cursor: pointer; }
 .form-footer-note { text-align: center; color: #777; font-size: 0.8rem; margin-top: 0.8rem; margin-bottom: 0; }
 
-/* MODAL DE MAPA */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 1rem; }
 .modal-card { background: white; border-radius: 8px; width: 100%; max-width: 600px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column; }
 .modal-header { padding: 1.2rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-.modal-header h4 { margin: 0; font-size: 1.1rem; color: #111; }
+.modal-header h4 { margin: 0; font-size: 1.1rem; color: #111; font-family: var(--font-title); }
 .close-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #888; line-height: 1; }
 .modal-body { position: relative; height: 350px; background: #e5e3df; }
 .map-render { width: 100%; height: 100%; }
