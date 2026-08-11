@@ -1,28 +1,80 @@
-# Angular specific
-/dist/
-/out-tsc/
-/tmp/
-/coverage/
-/e2e/test-output/
-/.angular/
-.angular/
+# =========================
+# Dependencies
+# =========================
+node_modules/
 
-# Node modules and dependency files
-/node_modules/
-/package-lock.json
-/yarn.lock
+# =========================
+# Production build
+# =========================
+dist/
+build/
 
-# Environment files
-/.env
+# =========================
+# Environment variables
+# =========================
+.env
+.env.local
+.env.*.local
 
-# Angular CLI and build artefacts
-/.angular-cli.json
-/.ng/
+# Si necesitas versionar variables públicas/no sensibles:
+# .env.example
 
-# TypeScript cache
-*.tsbuildinfo
-
+# =========================
 # Logs
+# =========================
+logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Cache
+# =========================
+.cache/
+.parcel-cache/
+.vite/
+*.tsbuildinfo
+
+# =========================
+# IDE / Editors
+# =========================
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+.idea/
+*.iml
+
+# =========================
+# Operating System
+# =========================
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# =========================
+# Temporary files
+# =========================
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# =========================
+# Coverage
+# =========================
+coverage/
+
+# =========================
+# Testing
+# =========================
+.nyc_output/
+
+# =========================
+# TypeScript
+# =========================
+*.tsbuildinfo

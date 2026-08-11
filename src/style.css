@@ -1,0 +1,29 @@
+/* Importar fuentes de Google Fonts (Playfair Display y Plus Jakarta Sans) */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+
+:root {
+  --font-title: 'Playfair Display', serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --color-primary: #c62828;   /* Rojo de tus botones principales */
+  --color-dark: #0c0c0c;      /* Negro de la sección de garantías y footer */
+  --color-text: #333333;      /* Gris oscuro para lectura cómoda */
+  --color-bg-light: #f9f9f9;  /* Fondo claro del Hero */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background-color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-serif {
+  font-family: var(--font-title);
+  font-weight: 700;
+}
