@@ -16,11 +16,28 @@ const campoActivo = ref('')
 let mapaInstancia = null
 let marcadorInstancia = null
 
-// Coordenadas reactivas para el pin móvil
+// Coordenadas reactivas para el pin móvil (uso temporal en el modal)
 const latActual = ref(19.432608)
 const lngActual = ref(-99.133208)
 
-// 🗺️ FUNCIÓN AL CLICKEAR LAS CAJAS DE TEXTO
+// NUEVO: Guardar coordenadas exactas de origen y destino para el cálculo
+const origenCoords = ref(null)
+const destinoCoords = ref(null)
+const distanciaKm = ref(null)
+
+// NUEVO: Función matemática para calcular distancia en KM (Fórmula de Haversine)
+const calcularDistancia = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Radio de la Tierra en km
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return (R * c).toFixed(2); // Retorna la distancia con 2 decimales
+}
+
+// FUNCIÓN AL CLICKEAR LAS CAJAS DE TEXTO
 const abrirSelectorMapa = (tipo) => {
   campoActivo.value = tipo
   mostrarMapaModal.value = true
@@ -69,7 +86,7 @@ const inicializarMapa = () => {
   })
 }
 
-// 📌 CONFIRMAR LA UBICACIÓN
+// CONFIRMAR LA UBICACIÓN
 const confirmarUbicacion = async () => {
   let direccionEstablecida = false
   let textoFinal = ''
@@ -78,7 +95,6 @@ const confirmarUbicacion = async () => {
     const controller = new AbortController()
     const timeoutId = setTimeout(() => controller.abort(), 1500)
 
-    // CORRECCIÓN: API de Nominatim y uso correcto de $ para la interpolación
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latActual.value}&lon=${lngActual.value}&addressdetails=1`
     
     const respuesta = await fetch(url, {
@@ -100,7 +116,7 @@ const confirmarUbicacion = async () => {
       const ciudad = a.city || a.town || 'CDMX'
       
       if (calle) {
-        textoFinal = `${calle} #${numero}, Col. ${colonia}, ${ciudad}`
+        textoFinal = `${calle} No. ${numero}, Col. ${colonia}, ${ciudad}`
         direccionEstablecida = true
       } else if (datos.display_name) {
         textoFinal = datos.display_name.split(',').slice(0, 3).join(',')
@@ -114,11 +130,23 @@ const confirmarUbicacion = async () => {
       textoFinal = `📍 Ubicación Confirmada (Mapa)`
     }
 
+    // ASIGNAR TEXTO Y COORDENADAS AL CAMPO CORRESPONDIENTE
     if (campoActivo.value === 'origen') {
       origenText.value = textoFinal
+      origenCoords.value = { lat: latActual.value, lng: lngActual.value }
     } else {
       destinoText.value = textoFinal
+      destinoCoords.value = { lat: latActual.value, lng: lngActual.value }
     }
+
+    // SI YA TENEMOS AMBAS COORDENADAS, CALCULAMOS LA DISTANCIA
+    if (origenCoords.value && destinoCoords.value) {
+      distanciaKm.value = calcularDistancia(
+        origenCoords.value.lat, origenCoords.value.lng,
+        destinoCoords.value.lat, destinoCoords.value.lng
+      )
+    }
+
     cerrarModal()
   }
 }
@@ -132,22 +160,29 @@ const cerrarModal = () => {
 }
 
 const enviarCotizacion = () => {
-  const numeroEmpresa = '522221234545'
+  const numeroEmpresa = '522381366979'
   
-  // CORRECCIÓN: Enlace correcto a Google Maps con $
-  const enlaceMapaGoogle = `https://www.google.com/maps/search/?api=1&query=${latActual.value},${lngActual.value}`
+  // Generamos links individuales para el origen y el destino en Google Maps
+  const linkOrigen = origenCoords.value ? `https://www.google.com/maps/search/?api=1&query=${origenCoords.value.lat},${origenCoords.value.lng}` : 'No definido'
+  const linkDestino = destinoCoords.value ? `https://www.google.com/maps/search/?api=1&query=${destinoCoords.value.lat},${destinoCoords.value.lng}` : 'No definido'
   
-  const mensaje = `¡Nueva solicitud de cotización!%0A%0A` +
-                  `👤 *Cliente:* ${nombre.value}%0A` +
-                  `📞 *WhatsApp:* ${telefono.value}%0A` +
-                  `🛫 *Origen:* ${origenText.value}%0A` +
-                  `🛬 *Destino:* ${destinoText.value}%0A` +
-                  `🗺️ *Ubicación en Mapa:* ${enlaceMapaGoogle}%0A` +
-                  `📦 *Servicio:* ${servicio.value}%0A` +
-                  `📝 *Notas:* ${detalles.value}`
+  // Asignamos la distancia calculada
+  const textoDistancia = distanciaKm.value ? `${distanciaKm.value} km aprox.` : 'No calculada'
+  
+  // Armamos el mensaje completo integrando TODOS los datos
+  const mensaje = `¡Nueva solicitud de cotización!\n\n` +
+                  `👤 *Cliente:* ${nombre.value}\n` +
+                  `📞 *WhatsApp:* ${telefono.value}\n` +
+                  `🛫 *Origen:* ${origenText.value}\n` +
+                  `📍 *Mapa Origen:* ${linkOrigen}\n\n` +
+                  `🛬 *Destino:* ${destinoText.value}\n` +
+                  `📍 *Mapa Destino:* ${linkDestino}\n\n` +
+                  `📏 *Total de kilómetros:* ${textoDistancia}\n` +
+                  `📦 *Servicio requerido:* ${servicio.value}\n` +
+                  `📝 *Detalles adicionales:* ${detalles.value}`
 
-  // CORRECCIÓN: Uso correcto de $ y la diagonal /
-  window.open(`https://wa.me/${numeroEmpresa}?text=${mensaje}`, '_blank')
+  // Abrimos WhatsApp asegurando que todo el bloque de texto se envíe completo
+  window.open(`https://wa.me/${numeroEmpresa}?text=${encodeURIComponent(mensaje)}`, '_blank')
 }
 </script>
 
@@ -169,7 +204,7 @@ const enviarCotizacion = () => {
         </div>
       </div>
 
-      <!-- Columna Derecha: Formulario Limpio Sin Botones Estorbosos -->
+      <!-- Columna Derecha: Formulario -->
       <div class="hero-right">
         <div class="form-card">
           <h3>Cotiza tu Mudanza en 1 Minuto</h3>
@@ -183,7 +218,6 @@ const enviarCotizacion = () => {
             <input v-model="telefono" type="tel" placeholder="2221234545" required>
 
             <div class="split-row">
-              <!-- Caja de Origen que reacciona directamente al clic -->
               <div class="map-input-box">
                 <label>PUNTO DE ORIGEN</label>
                 <input 
@@ -196,7 +230,6 @@ const enviarCotizacion = () => {
                 >
               </div>
 
-              <!-- Caja de Destino que reacciona directamente al clic -->
               <div class="map-input-box">
                 <label>PUNTO DE DESTINO</label>
                 <input 
@@ -208,6 +241,11 @@ const enviarCotizacion = () => {
                   required
                 >
               </div>
+            </div>
+
+            <!-- NUEVO: Alerta visual de la distancia calculada en pantalla -->
+            <div v-if="distanciaKm" class="distance-badge">
+              🛣️ Distancia estimada del trayecto: <strong>{{ distanciaKm }} km</strong>
             </div>
 
             <label>TIPO DE SERVICIO REQUERIDO</label>
@@ -231,7 +269,7 @@ const enviarCotizacion = () => {
     </div>
   </section>
 
-  <!-- 🗺️ VENTANA FLOTANTE MODAL DEL MAPA UNIFICADO -->
+  <!-- VENTANA FLOTANTE MODAL DEL MAPA -->
   <div v-if="mostrarMapaModal" class="modal-overlay">
     <div class="modal-card">
       <div class="modal-header">
@@ -272,14 +310,24 @@ form textarea { height: 90px; resize: none; }
 
 .split-row { display: flex; gap: 1rem; }
 .split-row div { flex: 1; }
-.input-gps-container { flex: 1; }
-.input-with-button { position: relative; display: flex; align-items: center; }
-.input-with-button input { padding-right: 3rem; }
 
-.btn-gps { position: absolute; right: 6px; top: 6px; height: calc(100% - 24px); width: 36px; background-color: #e0e0e0; border: none; border-radius: 4px; cursor: pointer; font-size: 1.1rem; }
-.btn-submit { width: 100%; background-color: var(--color-primary, #c62828); color: white; border: none; padding: 1.2rem; font-weight: bold; font-size: 1rem; border-radius: 4px; cursor: pointer; }
+/* NUEVO: Estilos para el cartel de la distancia calculada */
+.distance-badge {
+  background-color: #f0fdf4;
+  color: #166534;
+  padding: 0.9rem;
+  border-radius: 4px;
+  margin-bottom: 1.2rem;
+  font-size: 0.9rem;
+  border: 1px solid #bbf7d0;
+  text-align: center;
+}
 
-/* 🎨 ESTILOS DE LA VENTANA FLOTANTE DEL MAPA (MODAL) */
+.btn-submit { width: 100%; background-color: var(--color-primary, #c62828); color: white; border: none; padding: 1.2rem; font-weight: bold; font-size: 1rem; border-radius: 4px; cursor: pointer; transition: background 0.3s; }
+.btn-submit:hover { background-color: #a31f1f; }
+.caption { font-size: 0.8rem; color: #777; margin-top: 0.5rem; text-align: center;}
+
+/* ESTILOS DE LA VENTANA FLOTANTE DEL MAPA (MODAL) */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 1rem; }
 .modal-card { background: white; border-radius: 8px; width: 100%; max-width: 600px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column; }
 .modal-header { padding: 1.2rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
@@ -289,5 +337,7 @@ form textarea { height: 90px; resize: none; }
 .modal-body { position: relative; height: 350px; background: #e5e3df; }
 .map-render { width: 100%; height: 100%; }
 .loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 1001; color: #333; }
-
+.modal-footer { padding: 1rem; background: #fff; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; }
+.btn-confirmar { background: #000; color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
+.coordenadas-info { font-size: 0.8rem; color: #888; margin: 0;}
 </style>
