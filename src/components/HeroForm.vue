@@ -1,6 +1,7 @@
 <script setup>
 import { ref, nextTick, onUnmounted } from 'vue'
 import L from 'leaflet'
+import { CONFIGURACION_EMPRESA } from '../config/constants.js'
 
 const nombre = ref('')
 const telefono = ref('')
@@ -138,7 +139,6 @@ const cerrarModal = () => {
   }
 }
 
-// CORRECCIÓN: Limpieza de instancias Leaflet ante desmontajes inesperados
 onUnmounted(() => {
   if (mapaModalInstancia) {
     mapaModalInstancia.remove()
@@ -147,7 +147,6 @@ onUnmounted(() => {
 })
 
 const enviarCotizacion = () => {
-  const numeroEmpresa = '522381366979'
   const linkOrigen = origenCoords.value ? `https://www.google.com/maps/search/?api=1&query=${origenCoords.value.lat},${origenCoords.value.lng}` : 'No definido'
   const linkDestino = destinoCoords.value ? `https://www.google.com/maps/search/?api=1&query=${destinoCoords.value.lat},${destinoCoords.value.lng}` : 'No definido'
   const textoDistancia = distanciaKm.value ? `${distanciaKm.value} km aprox.` : 'No calculada'
@@ -163,7 +162,7 @@ const enviarCotizacion = () => {
                   `📦 *Servicio requerido:* ${servicio.value}\n` +
                   `📝 *Detalles adicionales:* ${detalles.value}`
 
-  window.open(`https://wa.me/${numeroEmpresa}?text=${encodeURIComponent(mensaje)}`, '_blank')
+  window.open(`https://wa.me/${CONFIGURACION_EMPRESA.WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`, '_blank')
 }
 </script>
 
