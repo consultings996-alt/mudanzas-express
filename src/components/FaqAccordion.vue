@@ -1,26 +1,9 @@
 <script setup>
 import { ref } from 'vue'
+import { SITE_DATA } from '../config/siteData.js'
 
-const preguntas = ref([
-  {
-    id: 1,
-    abierta: true,
-    titulo: '¿Cuánto cuesta un servicio de mudanza express básica en la CDMX?',
-    respuesta: 'Los precios de un flete o mudanza express varían según la distancia entre puntos, el volumen de los objetos y si se requieren maniobras complejas (como escaleras o volado de muebles). Contáctanos por WhatsApp para recibir una cotización transparente y parametrizada de inmediato.'
-  },
-  {
-    id: 2,
-    abierta: false,
-    titulo: '¿Cuáles son las zonas con mayor cobertura de Mudanzas Express?',
-    respuesta: 'Tenemos cobertura total en la Ciudad de México y área metropolitana, con presencia diaria destacada en Benito Juárez, Narvarte Oriente, Narvarte Poniente y la colonia Del Valle, además de salidas a servicios foráneos.'
-  },
-  {
-    id: 3,
-    abierta: false,
-    titulo: '¿Qué tipo de protección e insumos incluye el servicio de mudanza?',
-    respuesta: 'Todos nuestros servicios estándar incluyen empaque de protección con película plástica elástica de alta resistencia (emplayado) y el uso de mantas para mudanza de protección industrial sin ningún costo adicional.'
-  }
-])
+// Inicializar lista de preguntas reactiva basada en SITE_DATA
+const preguntas = ref(SITE_DATA.faqSection.preguntas.map(p => ({ ...p })))
 
 const togglePregunta = (id) => {
   preguntas.value = preguntas.value.map(p => 
@@ -32,9 +15,12 @@ const togglePregunta = (id) => {
 <template>
   <section class="faq-section">
     <div class="container">
-      <p class="tagline">RESPUESTAS SEMÁNTICAS DIRECTAS</p>
-      <h2>Preguntas frecuentes sobre Mudanzas Express en CDMX</h2>
-      
+      <div class="header-block">
+        <span class="tagline">{{ SITE_DATA.faqSection.tagline }}</span>
+        <h2>{{ SITE_DATA.faqSection.titulo }}</h2>
+      </div>
+
+      <!-- Lista de Preguntas Frecuentes Accordion -->
       <div class="faq-list">
         <div 
           v-for="item in preguntas" 
@@ -43,13 +29,19 @@ const togglePregunta = (id) => {
           :class="{ 'item-abierto': item.abierta }"
         >
           <div class="faq-header" @click="togglePregunta(item.id)">
-            <span class="faq-title" :class="{ 'title-active': item.abierta }">{{ item.titulo }}</span>
-            <span class="faq-icon">{{ item.abierta ? '×' : '+' }}</span>
+            <span class="faq-title" :class="{ 'title-active': item.abierta }">
+              {{ item.titulo }}
+            </span>
+            <div class="faq-icon-badge" :class="{ active: item.abierta }">
+              {{ item.abierta ? '−' : '+' }}
+            </div>
           </div>
-          
-          <div v-if="item.abierta" class="faq-body">
-            <p>{{ item.respuesta }}</p>
-          </div>
+
+          <Transition name="expand">
+            <div v-if="item.abierta" class="faq-body">
+              <p>{{ item.respuesta }}</p>
+            </div>
+          </Transition>
         </div>
       </div>
 
@@ -58,33 +50,128 @@ const togglePregunta = (id) => {
 </template>
 
 <style scoped>
-.faq-section { padding: 6rem 2rem; background-color: #ffffff; }
-.container { max-width: 850px; margin: 0 auto; }
+.faq-section {
+  padding: 5.5rem 2rem;
+  background-color: #ffffff;
+}
 
-.tagline { color: var(--color-primary); font-weight: bold; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 1rem; }
-h2 { font-size: 2.6rem; color: #111; margin-bottom: 3.5rem; line-height: 1.2; font-weight: 700; font-family: var(--font-title); }
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+}
 
-.faq-list { display: flex; flex-direction: column; }
-.faq-item { border-bottom: 1px solid #e0e0e0; padding: 1.8rem 0; transition: all 0.2s ease; }
-.faq-item:first-child { border-top: 1px solid #e0e0e0; }
+.header-block {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
 
-.faq-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; gap: 2rem; }
-.faq-title { font-weight: bold; font-size: 1.15rem; color: #111; line-height: 1.4; font-family: var(--font-body); }
+.tagline {
+  color: var(--color-primary);
+  font-weight: 800;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 0.6rem;
+}
 
-.item-abierto .faq-title { color: var(--color-primary); }
+h2 {
+  font-size: 2.6rem;
+  color: var(--color-dark);
+  line-height: 1.2;
+  font-weight: 800;
+}
 
-.faq-icon { font-size: 1.8rem; color: var(--color-primary); line-height: 1; font-weight: 300; width: 24px; text-align: center; }
+.faq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
 
-.faq-body { margin-top: 1.2rem; color: #555; line-height: 1.7; font-size: 1rem; animation: fadeIn 0.3s ease-in-out; }
+.faq-item {
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.4rem 1.8rem;
+  transition: all 0.25s ease;
+  background: #ffffff;
+}
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-5px); }
-  to { opacity: 1; transform: translateY(0); }
+.faq-item.item-abierto {
+  border-color: rgba(220, 38, 38, 0.3);
+  box-shadow: var(--shadow-md);
+  background: #fdfdfd;
+}
+
+.faq-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  gap: 1.5rem;
+}
+
+.faq-title {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-dark);
+  line-height: 1.4;
+  transition: color 0.2s ease;
+}
+
+.item-abierto .faq-title {
+  color: var(--color-primary);
+}
+
+.faq-icon-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-bg-light);
+  color: var(--color-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+}
+
+.faq-icon-badge.active {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.faq-body {
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px dashed var(--color-border);
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  font-size: 1rem;
+}
+
+.expand-enter-active,
+.expand-leave-active {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  max-height: 300px;
+  opacity: 1;
+  overflow: hidden;
+}
+
+.expand-enter-from,
+.expand-leave-to {
+  max-height: 0;
+  opacity: 0;
+  margin-top: 0;
+  padding-top: 0;
+  border-top-color: transparent;
 }
 
 @media (max-width: 768px) {
-  h2 { font-size: 2rem; margin-bottom: 2.5rem; }
+  h2 { font-size: 2rem; }
   .faq-title { font-size: 1rem; }
   .faq-section { padding: 4rem 1.5rem; }
+  .faq-item { padding: 1.2rem; }
 }
 </style>

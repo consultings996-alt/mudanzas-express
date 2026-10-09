@@ -1,13 +1,13 @@
 <script setup>
 import { ref, nextTick, onUnmounted } from 'vue'
 import L from 'leaflet'
-import { CONFIGURACION_EMPRESA } from '../config/constants.js'
+import { SITE_DATA } from '../config/siteData.js'
 
 const nombre = ref('')
 const telefono = ref('')
 const origenText = ref('')
 const destinoText = ref('')
-const servicio = ref('Mudanza Residencial Completa')
+const servicio = ref(SITE_DATA.hero.formulario.opcionesServicio[0])
 const detalles = ref('')
 
 const mostrarMapaModal = ref(false)
@@ -51,7 +51,7 @@ const abrirSelectorMapa = (tipo) => {
         cargandoGPS.value = false
         inicializarMapaModal()
       },
-      { enableHighAccuracy: true, timeout: 8000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
     )
   } else {
     cargandoGPS.value = false
@@ -64,16 +64,25 @@ const inicializarMapaModal = () => {
     if (mapaModalInstancia) {
       mapaModalInstancia.remove()
     }
-    mapaModalInstancia = L.map('mapa-modal-contenedor').setView([latActual.value, lngActual.value], 17)
+    mapaModalInstancia = L.map('mapa-modal-contenedor').setView([latActual.value, lngActual.value], 16)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap'
     }).addTo(mapaModalInstancia)
 
     marcadorModalInstancia = L.marker([latActual.value, lngActual.value], { draggable: true }).addTo(mapaModalInstancia)
+
     marcadorModalInstancia.on('dragend', () => {
       const posicion = marcadorModalInstancia.getLatLng()
       latActual.value = posicion.lat
       lngActual.value = posicion.lng
+    })
+
+    mapaModalInstancia.on('click', (e) => {
+      latActual.value = e.latlng.lat
+      lngActual.value = e.latlng.lng
+      if (marcadorModalInstancia) {
+        marcadorModalInstancia.setLatLng(e.latlng)
+      }
     })
   })
 }
@@ -84,12 +93,12 @@ const confirmarUbicacion = async () => {
 
   try {
     const controller = new AbortController()
-    const timeoutId = setTimeout(() => controller.abort(), 1500)
+    const timeoutId = setTimeout(() => controller.abort(), 1800)
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latActual.value}&lon=${lngActual.value}&addressdetails=1`
     
     const respuesta = await fetch(url, {
       signal: controller.signal,
-      headers: { 'Accept-Language': 'es', 'User-Agent': 'MudanzasExpressAppCDMX/3.0' }
+      headers: { 'Accept-Language': 'es', 'User-Agent': 'MudanzasExpressApp/3.0' }
     })
     
     clearTimeout(timeoutId)
@@ -97,12 +106,12 @@ const confirmarUbicacion = async () => {
     
     if (datos && datos.address) {
       const a = datos.address
-      const calle = a.road || ''
-      const numero = a.house_number || 'S/N'
-      const colonia = a.suburb || a.neighbourhood || ''
-      const ciudad = a.city || a.town || 'CDMX'
+      const calle = a.road || a.pedestrian || ''
+      const numero = a.house_number || ''
+      const colonia = a.suburb || a.neighbourhood || a.quarter || ''
+      const ciudad = a.city || a.town || a.county || 'CDMX'
       if (calle) {
-        textoFinal = `${calle} No. ${numero}, Col. ${colonia}, ${ciudad}`
+        textoFinal = `${calle} ${numero ? 'No. ' + numero : ''}${colonia ? ', Col. ' + colonia : ''}, ${ciudad}`
         direccionEstablecida = true
       }
     }
@@ -110,7 +119,7 @@ const confirmarUbicacion = async () => {
     console.warn("Respaldo de dirección activado")
   } finally {
     if (!direccionEstablecida) {
-      textoFinal = `📍 Ubicación Seleccionada en Mapa`
+      textoFinal = `📍 Coordenadas (${latActual.value.toFixed(4)}, ${lngActual.value.toFixed(4)})`
     }
 
     if (campoActivo.value === 'origen') {
@@ -147,8 +156,8 @@ onUnmounted(() => {
 })
 
 const enviarCotizacion = () => {
-  const linkOrigen = origenCoords.value ? `https://www.google.com/maps/search/?api=1&query=${origenCoords.value.lat},${origenCoords.value.lng}` : 'No definido'
-  const linkDestino = destinoCoords.value ? `https://www.google.com/maps/search/?api=1&query=${destinoCoords.value.lat},${destinoCoords.value.lng}` : 'No definido'
+  const linkOrigen = origenCoords.value ? `https://www.google.com/maps/search/?api=1&query=${origenCoords.value.lat},${origenCoords.value.lng}` : 'No especificado'
+  const linkDestino = destinoCoords.value ? `https://www.google.com/maps/search/?api=1&query=${destinoCoords.value.lat},${destinoCoords.value.lng}` : 'No especificado'
   const textoDistancia = distanciaKm.value ? `${distanciaKm.value} km aprox.` : 'No calculada'
   
   const mensaje = `¡Nueva solicitud de cotización!\n\n` +
@@ -158,131 +167,583 @@ const enviarCotizacion = () => {
                   `📍 *Mapa Origen:* ${linkOrigen}\n\n` +
                   `🛬 *Destino:* ${destinoText.value}\n` +
                   `📍 *Mapa Destino:* ${linkDestino}\n\n` +
-                  `📏 *Total de kilómetros:* ${textoDistancia}\n` +
-                  `📦 *Servicio requerido:* ${servicio.value}\n` +
-                  `📝 *Detalles adicionales:* ${detalles.value}`
+                  `📏 *Distancia estimada:* ${textoDistancia}\n` +
+                  `📦 *Servicio:* ${servicio.value}\n` +
+                  `📝 *Detalles:* ${detalles.value || 'Ninguno'}`
 
-  window.open(`https://wa.me/${CONFIGURACION_EMPRESA.WHATSAPP_NUMERO}?text=${encodeURIComponent(mensaje)}`, '_blank')
+  window.open(`https://wa.me/${SITE_DATA.empresa.whatsappNumero}?text=${encodeURIComponent(mensaje)}`, '_blank')
 }
 </script>
 
 <template>
   <section class="hero-section">
     <div class="hero-container">
+      <!-- Columna Izquierda: Mensaje principal y propuesta de valor -->
       <div class="hero-left">
-        <p class="tagline">SERVICIO EXPRESS LOCAL Y FORÁNEO</p>
-        <h1>Mudanzas sin estrés en la <span>CDMX.</span></h1>
-        <p class="description">Llegamos a tiempo, protegemos tus pertenencias con empaque premium y garantizamos el mejor precio operativo en Narvarte, Del Valle y toda la Ciudad de México.</p>
+        <div class="tagline-badge">
+          <span>{{ SITE_DATA.hero.tagline }}</span>
+        </div>
+
+        <h1 class="hero-title">
+          {{ SITE_DATA.hero.tituloParte1 }}
+          <span class="highlight">{{ SITE_DATA.hero.tituloDestacado }}</span>
+        </h1>
+
+        <p class="description">
+          {{ SITE_DATA.hero.descripcion }}
+        </p>
         
+        <!-- Píldora de Calificación y Prueba Social -->
         <div class="rating-box">
-          <span class="score">4.7</span>
-          <span class="stars">★★★★★</span>
-          <span class="count">Más de 148 opiniones reales en Google Maps</span>
+          <div class="score-pill">
+            <span class="score-number">{{ SITE_DATA.hero.calificacionScore }}</span>
+            <div class="stars-col">
+              <span class="stars">{{ SITE_DATA.hero.estrellas }}</span>
+              <span class="reviews-count">{{ SITE_DATA.hero.resenasTexto }}</span>
+            </div>
+          </div>
+          <div class="quality-badge">
+            <span class="badge-icon">🛡️</span>
+            <span>{{ SITE_DATA.hero.mencionCalidad }}</span>
+          </div>
         </div>
       </div>
 
+      <!-- Columna Derecha: Tarjeta de Formulario Interactivo -->
       <div class="hero-right">
         <div class="form-card">
-          <h3>Cotiza tu Mudanza en 1 Minuto</h3>
-          <p class="form-subtitle">La opción más rápida y segura de CDMX.</p>
+          <div class="form-header">
+            <h3>{{ SITE_DATA.hero.formulario.titulo }}</h3>
+            <p class="form-subtitle">{{ SITE_DATA.hero.formulario.subtitulo }}</p>
+          </div>
           
-          <form @submit.prevent="enviarCotizacion">
-            <div>
-              <label>TU NOMBRE</label>
-              <input v-model="nombre" type="text" placeholder="Ej. Roberto Aguilar" required>
+          <form @submit.prevent="enviarCotizacion" class="quote-form">
+            <div class="form-group">
+              <label>{{ SITE_DATA.hero.formulario.labelNombre }}</label>
+              <input
+                v-model="nombre"
+                type="text"
+                :placeholder="SITE_DATA.hero.formulario.placeholderNombre"
+                required
+              >
             </div>
 
-            <div>
-              <label>TELÉFONO / WHATSAPP</label>
-              <input v-model="telefono" type="tel" placeholder="55 1234 5678" required>
+            <div class="form-group">
+              <label>{{ SITE_DATA.hero.formulario.labelTelefono }}</label>
+              <input
+                v-model="telefono"
+                type="tel"
+                :placeholder="SITE_DATA.hero.formulario.placeholderTelefono"
+                required
+              >
             </div>
 
             <div class="split-row">
-              <div class="map-input-box" style="flex:1">
-                <label>ORIGEN</label>
-                <input v-model="origenText" type="text" placeholder="📍 Toca mapa" @click="abrirSelectorMapa('origen')" readonly required>
+              <div class="form-group" style="flex:1">
+                <label>{{ SITE_DATA.hero.formulario.labelOrigen }}</label>
+                <div class="map-input-wrapper">
+                  <input
+                    v-model="origenText"
+                    type="text"
+                    :placeholder="SITE_DATA.hero.formulario.placeholderOrigen"
+                    @click="abrirSelectorMapa('origen')"
+                    readonly
+                    required
+                  >
+                  <span class="input-icon">🗺️</span>
+                </div>
               </div>
-              <div class="map-input-box" style="flex:1">
-                <label>DESTINO</label>
-                <input v-model="destinoText" type="text" placeholder="📍 Toca mapa" @click="abrirSelectorMapa('destino')" readonly required>
+
+              <div class="form-group" style="flex:1">
+                <label>{{ SITE_DATA.hero.formulario.labelDestino }}</label>
+                <div class="map-input-wrapper">
+                  <input
+                    v-model="destinoText"
+                    type="text"
+                    :placeholder="SITE_DATA.hero.formulario.placeholderDestino"
+                    @click="abrirSelectorMapa('destino')"
+                    readonly
+                    required
+                  >
+                  <span class="input-icon">📍</span>
+                </div>
               </div>
             </div>
 
-            <div v-if="distanciaKm" class="distance-badge">
-              🛣️ Distancia estimada: <strong>{{ distanciaKm }} km</strong>
+            <!-- Insignia de distancia en Km si ambos se calcularon -->
+            <Transition name="fade">
+              <div v-if="distanciaKm" class="distance-badge">
+                <span class="badge-icon">🛣️</span>
+                <span>Distancia estimada: <strong>{{ distanciaKm }} km</strong></span>
+              </div>
+            </Transition>
+
+            <div class="form-group">
+              <label>{{ SITE_DATA.hero.formulario.labelServicio }}</label>
+              <select v-model="servicio">
+                <option v-for="(opc, idx) in SITE_DATA.hero.formulario.opcionesServicio" :key="idx" :value="opc">
+                  {{ opc }}
+                </option>
+              </select>
             </div>
 
-            <label>TIPO DE SERVICIO REQUERIDO</label>
-            <select v-model="servicio">
-              <option>Mudanza Residencial Completa</option>
-              <option>Fletes y Traslados Express</option>
-              <option>Maniobras y Volado de Muebles</option>
-            </select>
-
-            <label>DETALLES ADICIONALES (¿PISOS POR ESCALERA?, ¿VOLADO?)</label>
-            <textarea v-model="detalles" placeholder="Menciona si hay muebles pesados o mudanzas de última hora..."></textarea>
+            <div class="form-group">
+              <label>{{ SITE_DATA.hero.formulario.labelDetalles }}</label>
+              <textarea
+                v-model="detalles"
+                :placeholder="SITE_DATA.hero.formulario.placeholderDetalles"
+              ></textarea>
+            </div>
 
             <button type="submit" class="btn-submit">
-              COTIZAR VÍA WHATSAPP EXPRESS
+              {{ SITE_DATA.hero.formulario.botonTexto }}
             </button>
-            <p class="form-footer-note">Respuesta inmediata de lunes a domingo.</p>
+            <p class="form-footer-note">{{ SITE_DATA.hero.formulario.notaPie }}</p>
           </form>
         </div>
       </div>
     </div>
 
-    <div v-if="mostrarMapaModal" class="modal-overlay">
-      <div class="modal-card">
-        <div class="modal-header">
-          <h4>Fijar dirección de {{ campoActivo === 'origen' ? 'Origen' : 'Destino' }}</h4>
-          <button type="button" class="close-btn" @click="cerrarModal">×</button>
-        </div>
-        <div class="modal-body">
-          <div v-if="cargandoGPS" class="loader">Buscando señal de GPS...</div>
-          <div id="mapa-modal-contenedor" class="map-render"></div>
-        </div>
-        <div class="modal-footer">
-          <p class="coordenadas-info">Lat: {{ latActual.toFixed(4) }}, Lng: {{ lngActual.toFixed(4) }}</p>
-          <button type="button" class="btn-confirmar" @click="confirmarUbicacion">ACEPTAR DIRECCIÓN</button>
+    <!-- Modal Interactivo para Selección de Dirección con Mapa Leaflet -->
+    <Transition name="fade">
+      <div v-if="mostrarMapaModal" class="modal-overlay" @click.self="cerrarModal">
+        <div class="modal-card">
+          <div class="modal-header">
+            <h4>Fijar dirección de {{ campoActivo === 'origen' ? 'Origen' : 'Destino' }}</h4>
+            <button type="button" class="close-btn" @click="cerrarModal">×</button>
+          </div>
+
+          <div class="modal-body">
+            <div v-if="cargandoGPS" class="loader">
+              <div class="spinner"></div>
+              <span>Obteniendo tu ubicación actual por GPS...</span>
+            </div>
+            <div id="mapa-modal-contenedor" class="map-render"></div>
+            <p class="map-tip">💡 Puedes arrastrar el marcador rojo o hacer clic sobre el mapa para fijar la ubicación exacta.</p>
+          </div>
+
+          <div class="modal-footer">
+            <p class="coordenadas-info">
+              Lat: {{ latActual.toFixed(4) }}, Lng: {{ lngActual.toFixed(4) }}
+            </p>
+            <button type="button" class="btn-confirmar" @click="confirmarUbicacion">
+              CONFIRMAR UBICACIÓN
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </Transition>
   </section>
 </template>
 
 <style scoped>
-.hero-section { flex: 1; display: flex; align-items: center; background-color: var(--color-bg-light); padding: 3rem 5%; box-sizing: border-box; width: 100%; }
-.hero-container { max-width: 1300px; width: 100%; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 4rem; align-items: center; }
-.hero-left, .hero-right { flex: 1; min-width: 320px; }
-h1 { font-size: 3.2rem; line-height: 1.1; margin: 1rem 0; font-family: var(--font-title); }
-h1 span { color: var(--color-primary); font-style: italic; }
-.description { color: #555; line-height: 1.6; margin-bottom: 2rem; font-size: 1.05rem; }
-.tagline { color: #888; font-weight: bold; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 0.5rem;}
-.rating-box { display: flex; align-items: center; gap: 0.5rem; font-size: 0.9rem;}
-.score { font-weight: bold; font-size: 1.2rem;}
-.stars { color: #000; letter-spacing: 2px;}
-.count { color: #777;}
+.hero-section {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: linear-gradient(180deg, var(--color-bg-light) 0%, #ffffff 100%);
+  padding: 4.5rem 5%;
+  box-sizing: border-box;
+  width: 100%;
+  position: relative;
+}
 
-.form-card { background: #fff; padding: 2rem; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.06); border: 1px solid #eaeaea; }
-.form-card h3 { font-size: 1.6rem; margin: 0 0 0.5rem 0; font-family: var(--font-title); }
-.form-subtitle { color: #666; font-size: 0.9rem; margin-bottom: 1.5rem;}
-form label { display: block; font-size: 0.75rem; font-weight: bold; color: #444; margin-bottom: 0.4rem; }
-form input, form select, form textarea { width: 100%; padding: 0.8rem; margin-bottom: 1rem; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-size: 0.95rem; font-family: var(--font-body); }
-form textarea { height: 60px; resize: none; }
-.split-row { display: flex; gap: 1rem; }
-.distance-badge { background-color: #f0fdf4; color: #166534; padding: 0.7rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.9rem; border: 1px solid #bbf7d0; text-align: center; }
-.btn-submit { width: 100%; background-color: var(--color-primary); color: white; border: none; padding: 1.1rem; font-weight: bold; font-size: 0.95rem; border-radius: 4px; cursor: pointer; }
-.form-footer-note { text-align: center; color: #777; font-size: 0.8rem; margin-top: 0.8rem; margin-bottom: 0; }
+.hero-container {
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3.5rem;
+  align-items: center;
+}
 
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); display: flex; align-items: center; justify-content: center; z-index: 2000; padding: 1rem; }
-.modal-card { background: white; border-radius: 8px; width: 100%; max-width: 600px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; display: flex; flex-direction: column; }
-.modal-header { padding: 1.2rem; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
-.modal-header h4 { margin: 0; font-size: 1.1rem; color: #111; font-family: var(--font-title); }
-.close-btn { background: none; border: none; font-size: 1.8rem; cursor: pointer; color: #888; line-height: 1; }
-.modal-body { position: relative; height: 350px; background: #e5e3df; }
-.map-render { width: 100%; height: 100%; }
-.loader { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); display: flex; align-items: center; justify-content: center; font-weight: bold; z-index: 1001; color: #333; }
-.modal-footer { padding: 1rem; background: #fff; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; }
-.btn-confirmar { background: #000; color: white; padding: 0.8rem 1.5rem; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; }
-.coordenadas-info { font-size: 0.8rem; color: #888; margin: 0;}
+.hero-left {
+  flex: 1.1;
+  min-width: 320px;
+}
+
+.hero-right {
+  flex: 0.9;
+  min-width: 320px;
+}
+
+.tagline-badge {
+  display: inline-block;
+  background-color: var(--color-primary-light);
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  padding: 0.4rem 1rem;
+  border-radius: 50px;
+  margin-bottom: 1.2rem;
+  border: 1px solid rgba(220, 38, 38, 0.15);
+}
+
+.hero-title {
+  font-size: 3.4rem;
+  line-height: 1.12;
+  margin-bottom: 1.2rem;
+  color: var(--color-dark);
+}
+
+.hero-title .highlight {
+  color: var(--color-primary);
+  position: relative;
+  font-style: italic;
+}
+
+.description {
+  color: var(--color-text-muted);
+  line-height: 1.7;
+  margin-bottom: 2.2rem;
+  font-size: 1.1rem;
+  max-width: 580px;
+}
+
+.rating-box {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.score-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: #ffffff;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--color-border);
+}
+
+.score-number {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--color-dark);
+  font-family: var(--font-title);
+}
+
+.stars-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.stars {
+  color: #f59e0b;
+  letter-spacing: 2px;
+  font-size: 0.9rem;
+}
+
+.reviews-count {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.quality-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-dark);
+  background: rgba(16, 185, 129, 0.1);
+  padding: 0.6rem 1.1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.form-card {
+  background: #ffffff;
+  padding: 2.2rem;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  transition: transform 0.3s ease;
+}
+
+.form-header h3 {
+  font-size: 1.7rem;
+  margin-bottom: 0.3rem;
+}
+
+.form-subtitle {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-group {
+  margin-bottom: 1.1rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: var(--color-dark);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.04em;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-sizing: border-box;
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  background: #f8fafc;
+  color: var(--color-dark);
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.1);
+}
+
+.map-input-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.map-input-wrapper input {
+  cursor: pointer;
+  padding-right: 2.5rem;
+}
+
+.input-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 1rem;
+}
+
+.split-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.distance-badge {
+  background-color: #ecfdf5;
+  color: #065f46;
+  padding: 0.8rem;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.1rem;
+  font-size: 0.9rem;
+  border: 1px solid #a7f3d0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.form-group textarea {
+  height: 70px;
+  resize: none;
+}
+
+.btn-submit {
+  width: 100%;
+  background: linear-gradient(135deg, var(--color-primary) 0%, #b91c1c 100%);
+  color: white;
+  border: none;
+  padding: 1.1rem;
+  font-weight: 800;
+  font-size: 1rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.35);
+  transition: all 0.25s ease;
+  letter-spacing: 0.02em;
+}
+
+.btn-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(220, 38, 38, 0.45);
+}
+
+.form-footer-note {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  margin-top: 0.9rem;
+  font-weight: 600;
+}
+
+/* Modal del Mapa */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 1rem;
+}
+
+.modal-card {
+  background: white;
+  border-radius: var(--radius-xl);
+  width: 100%;
+  max-width: 650px;
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: 1.2rem 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h4 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--color-dark);
+}
+
+.close-btn {
+  background: #f1f5f9;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #64748b;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-body {
+  position: relative;
+  height: 360px;
+  background: #e2e8f0;
+}
+
+.map-render {
+  width: 100%;
+  height: 100%;
+}
+
+.map-tip {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(15, 23, 42, 0.85);
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  z-index: 1000;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.loader {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-weight: 700;
+  z-index: 1001;
+  color: var(--color-dark);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.modal-footer {
+  padding: 1.1rem 1.5rem;
+  background: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid var(--color-border);
+}
+
+.btn-confirmar {
+  background: var(--color-dark);
+  color: white;
+  padding: 0.85rem 1.6rem;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  font-weight: 800;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.btn-confirmar:hover {
+  background: var(--color-primary);
+}
+
+.coordenadas-info {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+@media (max-width: 992px) {
+  .hero-section {
+    padding: 2.5rem 4%;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+
+  .split-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .modal-card {
+    max-width: 95%;
+  }
+
+  .map-tip {
+    display: none;
+  }
+}
 </style>

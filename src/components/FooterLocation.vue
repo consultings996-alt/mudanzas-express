@@ -1,87 +1,275 @@
 <script setup>
+import { SITE_DATA } from '../config/siteData.js'
+
+const emit = defineEmits(['navigate'])
+
+const irA = (vista) => {
+  emit('navigate', vista)
+}
 </script>
 
 <template>
   <footer class="site-footer">
+    <!-- Contenedor de Ubicación y Mapa Interactivo Embed -->
     <div class="location-container">
       <div class="map-wrapper">
         <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3763.298715104642!2d-99.1578335!3d19.3995874!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff0c13144a83%3A0xc47bcf1cc1795c64!2sPet%C3%A9n%20227%2C%20Narvarte%20Poniente%2C%20Benito%20Ju%C3%A1rez%2C%2003023%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses-419!2smx!4v1700000000000!5m2!1ses-419!2smx"
+          :src="SITE_DATA.empresa.mapaEmbedUrl"
           width="100%" 
-          height="350" 
+          height="360"
           style="border:0;" 
           allowfullscreen="" 
           loading="lazy" 
-          referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Ubicación Base Operativa"
+        ></iframe>
       </div>
       
       <div class="info-wrapper">
-        <h2>Base Operativa Narvarte CDMX</h2>
-        <p class="address"><strong>Dirección:</strong> Petén 227, Narvarte Poniente, Benito Juárez, 03023 Ciudad de México, CDMX</p>
-        <p class="phone"><strong>Teléfono Principal:</strong> +52 55 3111 3181</p>
-        <p class="hours"><strong>Horarios:</strong> Lunes a Domingo de 07:00 a 21:00 hrs.</p>
+        <div class="info-badge">📍 UBICACIÓN ESTRATÉGICA</div>
+        <h2>{{ SITE_DATA.empresa.baseOperativa }}</h2>
+
+        <div class="info-list">
+          <div class="info-item">
+            <span class="info-icon">🏢</span>
+            <div>
+              <strong>Dirección Principal:</strong>
+              <p>{{ SITE_DATA.empresa.direccion }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <span class="info-icon">📞</span>
+            <div>
+              <strong>Teléfono y Atención:</strong>
+              <p>{{ SITE_DATA.empresa.telefonoContacto }}</p>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <span class="info-icon">🕒</span>
+            <div>
+              <strong>Horarios de Servicio:</strong>
+              <p>{{ SITE_DATA.empresa.horarioAtencion }}</p>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
+    <!-- Directorio y Navegación del Footer -->
     <div class="directory-container">
       <div class="directory-grid">
         <div class="brand-column">
-          <h3 class="footer-logo">Mudanzas Express</h3>
-          <p>Empresa líder en transportes de mudanza locales y fletes urgentes en la Ciudad de México. Seguridad y confianza en cada viaje.</p>
+          <div class="footer-logo-wrapper" @click="irA('inicio')">
+            <span class="logo-icon">🚛</span>
+            <h3 class="footer-logo">{{ SITE_DATA.empresa.nombre }}</h3>
+          </div>
+          <p>{{ SITE_DATA.footer.bioEmpresa }}</p>
         </div>
         
         <div class="links-column">
-          <h4>SERVICIOS LOGÍSTICOS</h4>
+          <h4>{{ SITE_DATA.footer.tituloServicios }}</h4>
           <ul>
-            <li>Mudanza Residencial</li>
-            <li>Fletes Express Urgentes</li>
-            <li>Volado de Muebles CDMX</li>
+            <li v-for="(item, idx) in SITE_DATA.footer.serviciosDirectorio" :key="idx" @click="irA('servicios')">
+              {{ item }}
+            </li>
           </ul>
         </div>
         
         <div class="links-column">
-          <h4>ZONAS DE COBERTURA</h4>
+          <h4>{{ SITE_DATA.footer.tituloCobertura }}</h4>
           <ul>
-            <li>Narvarte Poniente / Oriente</li>
-            <li>Colonia Del Valle</li>
-            <li>Alcaldía Benito Juárez / CDMX</li>
+            <li v-for="(item, idx) in SITE_DATA.footer.coberturaDirectorio" :key="idx">
+              {{ item }}
+            </li>
           </ul>
         </div>
       </div>
       
       <div class="footer-bottom">
-        <p>© 2026 Mudanzas Express CDMX. Todos los derechos reservados. mudanzasexpress.mx</p>
+        <p>{{ SITE_DATA.footer.copyright }}</p>
       </div>
     </div>
   </footer>
 </template>
 
 <style scoped>
-.site-footer { background-color: #ffffff; color: #333; }
+.site-footer {
+  background-color: #ffffff;
+  color: var(--color-text);
+}
 
-.location-container { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; padding: 5rem 2rem; gap: 4rem; align-items: center; }
-.map-wrapper { flex: 1.2; min-width: 320px; border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-.info-wrapper { flex: 1; min-width: 320px; }
-.info-wrapper h2 { font-size: 2.2rem; margin-bottom: 1.5rem; color: #111; line-height: 1.2; font-family: var(--font-title); }
-.info-wrapper p { margin-bottom: 1.2rem; font-size: 1rem; color: #555; line-height: 1.6; font-family: var(--font-body); }
-.info-wrapper strong { color: #111; }
+.location-container {
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 1250px;
+  margin: 0 auto;
+  padding: 5rem 2rem;
+  gap: 4rem;
+  align-items: center;
+}
 
-.directory-container { background-color: var(--color-dark); color: #888; padding: 5rem 2rem 2rem 2rem; }
-.directory-grid { max-width: 1200px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 3rem; justify-content: space-between; }
-.brand-column { flex: 2; min-width: 260px; }
-.brand-column p { line-height: 1.7; margin-top: 1.2rem; font-size: 0.95rem; color: #777; }
-.footer-logo { color: #fff; font-size: 1.6rem; margin: 0; letter-spacing: 0.5px; font-family: var(--font-title); }
+.map-wrapper {
+  flex: 1.2;
+  min-width: 320px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
 
-.links-column { flex: 1; min-width: 200px; }
-.links-column h4 { color: #555; font-size: 0.8rem; letter-spacing: 1px; margin-bottom: 1.5rem; font-family: var(--font-body); font-weight: 700; }
-.links-column ul { list-style: none; padding: 0; margin: 0; }
-.links-column li { margin-bottom: 0.9rem; font-size: 0.9rem; color: #aaa; font-family: var(--font-body); }
+.info-wrapper {
+  flex: 1;
+  min-width: 320px;
+}
 
-.footer-bottom { max-width: 1200px; margin: 4rem auto 0 auto; padding-top: 1.5rem; border-top: 1px solid #222; font-size: 0.8rem; color: #444; text-align: center; font-family: var(--font-body); }
+.info-badge {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  background: var(--color-primary-light);
+  padding: 0.3rem 0.8rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+}
+
+.info-wrapper h2 {
+  font-size: 2.2rem;
+  margin-bottom: 1.8rem;
+  color: var(--color-dark);
+  line-height: 1.2;
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.info-item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.info-icon {
+  font-size: 1.4rem;
+  background: var(--color-bg-light);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+
+.info-item strong {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--color-dark);
+  font-weight: 800;
+  margin-bottom: 0.2rem;
+}
+
+.info-item p {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.directory-container {
+  background-color: var(--color-dark);
+  color: #94a3b8;
+  padding: 5rem 2rem 2.5rem 2rem;
+}
+
+.directory-grid {
+  max-width: 1250px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3.5rem;
+  justify-content: space-between;
+}
+
+.brand-column {
+  flex: 2;
+  min-width: 280px;
+}
+
+.footer-logo-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  margin-bottom: 1rem;
+}
+
+.logo-icon {
+  font-size: 1.8rem;
+}
+
+.footer-logo {
+  color: #ffffff;
+  font-size: 1.6rem;
+  margin: 0;
+  font-family: var(--font-title);
+}
+
+.brand-column p {
+  line-height: 1.7;
+  font-size: 0.95rem;
+  color: #94a3b8;
+  max-width: 450px;
+}
+
+.links-column {
+  flex: 1;
+  min-width: 200px;
+}
+
+.links-column h4 {
+  color: #ffffff;
+  font-size: 0.82rem;
+  letter-spacing: 0.08em;
+  margin-bottom: 1.4rem;
+  font-weight: 800;
+}
+
+.links-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.links-column li {
+  margin-bottom: 0.8rem;
+  font-size: 0.92rem;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.links-column li:hover {
+  color: var(--color-primary);
+}
+
+.footer-bottom {
+  max-width: 1250px;
+  margin: 4rem auto 0 auto;
+  padding-top: 2rem;
+  border-top: 1px solid var(--color-dark-surface);
+  font-size: 0.85rem;
+  color: #64748b;
+  text-align: center;
+}
 
 @media (max-width: 768px) {
-  .location-container { padding: 4rem 1.5rem; gap: 2.5rem; flex-direction: column-reverse; }
+  .location-container { padding: 3.5rem 1.5rem; gap: 2.5rem; flex-direction: column-reverse; }
   .info-wrapper h2 { font-size: 1.8rem; }
   .directory-grid { flex-direction: column; gap: 2.5rem; }
   .directory-container { padding: 4rem 1.5rem 2rem 1.5rem; }

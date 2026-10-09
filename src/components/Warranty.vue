@@ -1,35 +1,28 @@
 <script setup>
-import { ref } from 'vue'
-
-const protocolos = ref([
-  {
-    titulo: 'Emplayado e Inventariado Sistemático',
-    descripcion: 'Toda tu carga viaja completamente protegida con película plástica de alta resistencia y mantas de protección industrial sin ningún costo adicional.'
-  },
-  {
-    titulo: 'Operadores Identificados y Monitoreados',
-    descripcion: 'Contamos con un equipo humano de absoluta confianza, con años de experiencia operando rutas críticas y maniobras de carga en la Ciudad de México.'
-  },
-  {
-    titulo: 'Flota con Rastreo Satelital Activo',
-    descripcion: 'Nuestras unidades de transporte integran sistemas de geolocalización en tiempo real para brindarte monitoreo continuo durante todo el traslado.'
-  }
-])
+import { SITE_DATA } from '../config/siteData.js'
 </script>
 
 <template>
   <section class="warranty-section">
     <div class="container">
       <div class="content-wrapper">
-        <p class="tagline">PROTOCOLO DE CUIDADO DE ACTIVOS</p>
-        <h2>¿Por qué Mudanzas Express es la opción <span>más confiable?</span></h2>
+        <span class="tagline">{{ SITE_DATA.garantiaSection.tagline }}</span>
+        <h2>
+          {{ SITE_DATA.garantiaSection.titulo }}
+          <span class="highlight">{{ SITE_DATA.garantiaSection.tituloDestacado }}</span>
+        </h2>
         <p class="intro">
-          Construimos procesos claros de mudanza basados en la honestidad, la puntualidad y la seguridad física de tu patrimonio en cada kilómetro del trayecto.
+          {{ SITE_DATA.garantiaSection.intro }}
         </p>
-        
-        <div class="protocols-list">
-          <div v-for="(item, index) in protocolos" :key="index" class="protocol-item">
-            <span class="check-icon">✓</span>
+
+        <!-- Lista de Protocolos de Seguridad -->
+        <div class="protocols-grid">
+          <div
+            v-for="(item, index) in SITE_DATA.garantiaSection.protocolos"
+            :key="index"
+            class="protocol-card"
+          >
+            <div class="card-number-badge">{{ item.numero }}</div>
             <div class="protocol-text">
               <h3>{{ item.titulo }}</h3>
               <p>{{ item.descripcion }}</p>
@@ -45,80 +38,106 @@ const protocolos = ref([
 .warranty-section { 
   background-color: var(--color-dark); 
   color: #ffffff; 
-  padding: 6rem 2rem; 
+  padding: 6rem 2rem;
+  position: relative;
+  overflow: hidden;
 }
-.container { 
-  max-width: 1200px; 
+
+.container {
+  max-width: 1250px;
   margin: 0 auto; 
 }
-.content-wrapper { 
-  max-width: 900px; 
+
+.content-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
 }
 
 .tagline { 
-  color: #888; 
-  font-weight: bold; 
+  color: var(--color-primary);
+  font-weight: 800;
   font-size: 0.8rem; 
-  letter-spacing: 2px; 
-  margin-bottom: 1rem; 
+  letter-spacing: 0.12em;
+  display: block;
+  margin-bottom: 0.8rem;
 }
-h2 { 
-  font-size: 3rem; 
-  line-height: 1.2; 
-  margin: 1rem 0 1.5rem 0; 
-  font-weight: normal;
-  font-family: var(--font-title);
+
+h2 {
+  font-size: 3.2rem;
+  line-height: 1.15;
+  color: #ffffff;
+  margin-bottom: 1.2rem;
 }
-h2 span { 
+
+h2 .highlight {
   font-style: italic; 
   color: var(--color-primary); 
 }
-.intro { 
-  color: #aaa; 
-  max-width: 650px; 
+
+.intro {
+  color: #94a3b8;
+  max-width: 700px;
   margin-bottom: 4rem; 
   line-height: 1.7; 
-  font-size: 1.05rem; 
+  font-size: 1.1rem;
 }
 
-.protocols-list { 
-  display: flex; 
-  flex-direction: column; 
-  gap: 2.5rem; 
-}
-.protocol-item { 
-  display: flex; 
-  gap: 1.5rem; 
-  border-bottom: 1px solid #222; 
-  padding-bottom: 2rem; 
-}
-.protocol-item:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
+.protocols-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
 }
 
-.check-icon { 
-  color: var(--color-primary); 
-  font-weight: bold; 
-  font-size: 1.3rem; 
-  margin-top: 0.2rem;
+.protocol-card {
+  background: var(--color-dark-surface);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 2.2rem;
+  border-radius: var(--radius-lg);
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
 }
-.protocol-text h3 { 
-  font-size: 1.3rem; 
-  margin-bottom: 0.6rem; 
-  color: #fff;
-  font-family: var(--font-body);
-  font-weight: 600;
+
+.protocol-card:hover {
+  transform: translateY(-5px);
+  border-color: rgba(220, 38, 38, 0.4);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
-.protocol-text p { 
-  color: #999; 
-  line-height: 1.6; 
+
+.card-number-badge {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #b91c1c 100%);
+  color: #ffffff;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  font-family: var(--font-title);
+  margin-bottom: 1.4rem;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.protocol-text h3 {
+  font-size: 1.3rem; 
+  margin-bottom: 0.8rem;
+  color: #ffffff;
+  font-family: var(--font-title);
+  font-weight: 700;
+}
+
+.protocol-text p {
+  color: #cbd5e1;
+  line-height: 1.65;
   font-size: 0.95rem; 
 }
 
 @media (max-width: 768px) {
-  h2 { font-size: 2.2rem; }
+  h2 { font-size: 2.3rem; }
   .warranty-section { padding: 4rem 1.5rem; }
-  .protocol-item { gap: 1rem; }
+  .intro { font-size: 1rem; }
 }
 </style>
