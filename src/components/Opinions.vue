@@ -1,30 +1,49 @@
 <script setup>
+import { SITE_DATA } from '../config/siteData.js'
 </script>
 
 <template>
-  <section class="inner-page">
-    <div class="content-box">
+  <section class="opinions-section">
+    <div class="container">
       <div class="opiniones-header">
-        <div>
-          <span class="section-tag-line">— REPUTACIÓN VERIFICADA DE CLIENTES</span>
-          <h2>La experiencia de quienes ya se <span>mudaron con nosotros.</span></h2>
+        <div class="header-text">
+          <span class="section-tag-line">{{ SITE_DATA.opinionesSection.tagline }}</span>
+          <h2>
+            {{ SITE_DATA.opinionesSection.titulo }}
+            <span class="highlight">{{ SITE_DATA.opinionesSection.tituloDestacado }}</span>
+          </h2>
         </div>
-        <div class="score-box-big">
-          <span class="big-num">4.7</span>
-          <span class="big-stars">★★★★★</span>
+
+        <div class="score-card">
+          <span class="big-num">{{ SITE_DATA.opinionesSection.scorePromedio }}</span>
+          <div class="score-details">
+            <span class="big-stars">{{ SITE_DATA.opinionesSection.estrellas }}</span>
+            <span class="total-reviews">{{ SITE_DATA.opinionesSection.resenasTotal }}</span>
+          </div>
         </div>
       </div>
 
+      <!-- Grid de Testimonios de Clientes -->
       <div class="cards-grid">
-        <div class="service-card">
-          <span class="card-stars-mini">★★★★★</span>
-          <p>"Tenía una mudanza urgente de Narvarte a Polanco en sábado. Llegaron a la hora acordada, protegieron mi sala y pantallas a la perfección. Gran servicio técnico."</p>
-          <strong>Carlos Mendoza</strong>
-        </div>
-        <div class="service-card">
-          <span class="card-stars-mini">★★★★★</span>
-          <p>"Excelente opción para mudanzas express en CDMX. El volado de mi refrigerador por el balcón lo hicieron súper rápido y sin ningún rasguño. Súper recomendados."</p>
-          <strong>Laura Beltrán</strong>
+        <div
+          v-for="item in SITE_DATA.opinionesSection.testimonios"
+          :key="item.id"
+          class="review-card"
+        >
+          <div class="card-top">
+            <span class="card-stars">{{ item.estrellas }}</span>
+            <span class="review-date">{{ item.fecha }}</span>
+          </div>
+
+          <p class="comment-text">"{{ item.comentario }}"</p>
+
+          <div class="author-info">
+            <div class="avatar-circle">{{ item.nombre.charAt(0) }}</div>
+            <div class="author-meta">
+              <strong>{{ item.nombre }}</strong>
+              <div class="location-badge">📍 {{ item.ubicacion }}</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -32,16 +51,173 @@
 </template>
 
 <style scoped>
-.inner-page { padding: 4rem 5%; max-width: 1200px; margin: 0 auto; width: 100%; box-sizing: border-box; }
-.section-tag-line { color: var(--color-primary); font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; display: block; margin-bottom: 0.8rem; }
-.opiniones-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 3rem; flex-wrap: wrap; gap: 1rem; }
-.opiniones-header h2 { font-family: var(--font-title); font-size: 2.8rem; line-height: 1.2; }
-.opiniones-header h2 span { color: var(--color-primary); font-style: italic; }
-.score-box-big { text-align: right; }
-.big-num { font-size: 3.5rem; font-weight: bold; font-family: var(--font-title); display: block; line-height: 1; }
-.big-stars { color: #d4af37; letter-spacing: 3px; }
-.cards-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
-.service-card { border: 1px solid #e0e0e0; padding: 2.5rem 2rem; background: #fff; border-radius: 4px; }
-.service-card p { color: #555; line-height: 1.6; margin-bottom: 1.5rem; font-size: 0.95rem; }
-.card-stars-mini { color: #d4af37; letter-spacing: 2px; display: block; margin-bottom: 1rem; }
+.opinions-section {
+  padding: 5.5rem 2rem;
+  background-color: var(--color-bg-light);
+}
+
+.container {
+  max-width: 1250px;
+  margin: 0 auto;
+}
+
+.section-tag-line {
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.opiniones-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 3.5rem;
+  flex-wrap: wrap;
+  gap: 2rem;
+}
+
+.header-text h2 {
+  font-size: 2.8rem;
+  line-height: 1.18;
+  max-width: 650px;
+}
+
+.header-text h2 .highlight {
+  color: var(--color-primary);
+  font-style: italic;
+}
+
+.score-card {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  background: #ffffff;
+  padding: 1.2rem 1.8rem;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--color-border);
+}
+
+.big-num {
+  font-size: 3.2rem;
+  font-weight: 800;
+  font-family: var(--font-title);
+  color: var(--color-dark);
+  line-height: 1;
+}
+
+.score-details {
+  display: flex;
+  flex-direction: column;
+}
+
+.big-stars {
+  color: #f59e0b;
+  letter-spacing: 2px;
+  font-size: 1.1rem;
+}
+
+.total-reviews {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.8rem;
+}
+
+.review-card {
+  border: 1px solid var(--color-border);
+  padding: 2rem;
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.review-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-lg);
+  border-color: rgba(220, 38, 38, 0.2);
+}
+
+.card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
+}
+
+.card-stars {
+  color: #f59e0b;
+  letter-spacing: 2px;
+  font-size: 0.95rem;
+}
+
+.review-date {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+.comment-text {
+  color: var(--color-text);
+  line-height: 1.65;
+  margin-bottom: 1.8rem;
+  font-size: 0.98rem;
+  font-style: italic;
+  flex: 1;
+}
+
+.author-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  border-top: 1px solid var(--color-border);
+  padding-top: 1rem;
+}
+
+.avatar-circle {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-dark-surface) 100%);
+  color: #ffffff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+  font-family: var(--font-title);
+}
+
+.author-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.author-meta strong {
+  font-size: 0.95rem;
+  color: var(--color-dark);
+}
+
+.location-badge {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .header-text h2 { font-size: 2.2rem; }
+  .opiniones-header { flex-direction: column; align-items: flex-start; }
+  .score-card { width: 100%; justify-content: center; }
+}
 </style>

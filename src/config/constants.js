@@ -1,8 +1,10 @@
 // src/config/constants.js
+import { SITE_DATA } from './siteData.js'
 
 export const CONFIGURACION_EMPRESA = {
-  // Ingresa aquí tu número de WhatsApp con código de país y área (ej: México 52 + 10 dígitos)
-  WHATSAPP_NUMERO: '5212381476695',
-  WHATSAPP_NUMERO_FORMATO: '23 1234 5678',
-  NOMBRE_EMPRESA: 'Mudanzas'
+  WHATSAPP_NUMERO: SITE_DATA.empresa.whatsappNumero,
+  WHATSAPP_NUMERO_FORMATO: SITE_DATA.empresa.whatsappFormato,
+  NOMBRE_EMPRESA: SITE_DATA.empresa.nombre
 }
+
+export { SITE_DATA }

@@ -1,13 +1,29 @@
-/* Importar fuentes de Google Fonts (Playfair Display y Plus Jakarta Sans) */
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap');
+/* Importar fuentes de Google Fonts (Plus Jakarta Sans & Outfit) */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
 :root {
-  --font-title: 'Playfair Display', serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
-  --color-primary: #c62828;   /* Rojo de tus botones principales */
-  --color-dark: #0c0c0c;      /* Negro de la sección de garantías y footer */
-  --color-text: #333333;      /* Gris oscuro para lectura cómoda */
-  --color-bg-light: #f9f9f9;  /* Fondo claro del Hero */
+  --font-title: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --color-primary: #dc2626;        /* Rojo corporativo primario */
+  --color-primary-hover: #b91c1c;  /* Hover del botón */
+  --color-primary-light: #fef2f2;  /* Fondo tenue rojo */
+  --color-dark: #0f172a;           /* Slate 900 */
+  --color-dark-surface: #1e293b;   /* Slate 800 */
+  --color-text: #334155;           /* Slate 700 para lectura limpia */
+  --color-text-muted: #64748b;     /* Slate 500 */
+  --color-bg-light: #f8fafc;       /* Slate 50 */
+  --color-border: #e2e8f0;         /* Slate 200 */
+
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-md: 0 4px 12px -2px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px -4px rgba(15, 23, 42, 0.12);
+  --shadow-xl: 0 20px 40px -8px rgba(15, 23, 42, 0.16);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
 }
 
 * {
@@ -16,14 +32,81 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+}
+
 body {
   font-family: var(--font-body);
   color: var(--color-text);
   background-color: #ffffff;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  overflow-x: hidden;
 }
 
-h1, h2, h3, .font-serif {
+h1, h2, h3, h4, h5, h6, .font-heading {
   font-family: var(--font-title);
   font-weight: 700;
+  color: var(--color-dark);
+  letter-spacing: -0.02em;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Botones universales interactivos */
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, #b91c1c 100%);
+  color: #ffffff;
+  border: none;
+  padding: 0.9rem 1.8rem;
+  font-family: var(--font-body);
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.35);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.45);
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Transiciones animadas globales */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(10px);
 }
