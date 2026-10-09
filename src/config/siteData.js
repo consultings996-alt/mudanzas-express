@@ -17,14 +17,14 @@ export const SITE_DATA = {
   empresa: {
     nombre: 'Mudanzas Express',
     slogan: 'SERVICIO EXPRESS LOCAL Y FORÁNEO',
-    telefonoContacto: '+52 55 3111 3181',
-    whatsappNumero: '5212381476695', // Número con código de país sin signo + ni espacios (Ej. 5215531113181)
-    whatsappFormato: '55 3111 3181',
-    emailContacto: 'contacto@mudanzasexpress.mx',
+    telefonoContacto: '+52 55 5555 5555',
+    whatsappNumero: '5212381476695', // Tu número de WhatsApp único
+    whatsappFormato: '23 8147 6695',
+    emailContacto: 'contacto@ejemplo-mudanzas.com',
     horarioAtencion: 'Lunes a Domingo de 07:00 a 21:00 hrs',
-    baseOperativa: 'Base Operativa Narvarte CDMX',
-    direccion: 'Petén 227, Narvarte Poniente, Benito Juárez, 03023 Ciudad de México, CDMX',
-    mapaEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3763.298715104642!2d-99.1578335!3d19.3995874!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x85d1ff0c13144a83%3A0xc47bcf1cc1795c64!2sPet%C3%A9n%20227%2C%20Narvarte%20Poniente%2C%20Benito%20Ju%C3%A1rez%2C%2003023%20Ciudad%20de%20M%C3%A9xico%2C%20CDMX!5e0!3m2!1ses-419!2smx!4v1700000000000!5m2!1ses-419!2smx',
+    baseOperativa: 'Base Operativa Central CDMX',
+    direccion: 'Av. Insurgentes Sur 1234, Col. Del Valle, Benito Juárez, 03100 Ciudad de México, CDMX',
+    mapaEmbedUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3763.500000000000!2d-99.1700000!3d19.3800000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMTksMzgnMDAuMCJOIDk5wrAxMCcwMC4wIlc!5e0!3m2!1ses-419!2smx!4v1700000000000!5m2!1ses-419!2smx',
     colores: {
       primario: '#dc2626',       // Rojo corporativo vibrante
       primarioHover: '#b91c1c',  // Rojo más oscuro para hovers
@@ -55,22 +55,22 @@ export const SITE_DATA = {
     tagline: '⚡ FLETES & MUDANZAS CDMX Y NACIONAL',
     tituloParte1: 'Mudanzas sin estrés en la ',
     tituloDestacado: 'CDMX.',
-    descripcion: 'Llegamos a tiempo, protegemos tus pertenencias con empaque premium y garantizamos el mejor precio operativo en Narvarte, Del Valle y toda la Ciudad de México.',
+    descripcion: 'Llegamos a tiempo, protegemos tus pertenencias con empaque premium y garantizamos el mejor precio operativo en toda la Ciudad de México y área metropolitana.',
     calificacionScore: '4.9',
     estrellas: '★★★★★',
-    resenasTexto: 'Más de 250+ opiniones reales en Google Maps',
+    resenasTexto: 'Más de 250+ opiniones de clientes satisfechos',
     mencionCalidad: '100% Satisfacción garantizada',
     formulario: {
       titulo: 'Cotiza tu Mudanza en 1 Minuto',
-      subtitulo: 'La opción más rápida, segura y transparente de CDMX.',
+      subtitulo: 'La opción más rápida, segura y transparente de la ciudad.',
       labelNombre: 'TU NOMBRE COMPLETO',
-      placeholderNombre: 'Ej. Roberto Aguilar',
+      placeholderNombre: 'Ej. Juan Pérez',
       labelTelefono: 'TELÉFONO / WHATSAPP',
       placeholderTelefono: 'Ej. 55 1234 5678',
       labelOrigen: 'ORIGEN',
-      placeholderOrigen: '📍 Toca para elegir en mapa',
+      placeholderOrigen: 'Toca para elegir en mapa',
       labelDestino: 'DESTINO',
-      placeholderDestino: '📍 Toca para elegir en mapa',
+      placeholderDestino: 'Toca para elegir en mapa',
       labelServicio: 'TIPO DE SERVICIO REQUERIDO',
       labelDetalles: 'DETALLES ADICIONALES (¿PISOS POR ESCALERA?, ¿VOLADO?)',
       placeholderDetalles: 'Menciona si hay muebles pesados, cajas o mudanzas de última hora...',
@@ -128,21 +128,21 @@ export const SITE_DATA = {
     flotaSubtitulo: 'Contamos con unidades monitoreadas en tiempo real con GPS y adaptadas para proteger tu patrimonio en cada traslado.',
     unidades: [
       {
-        tipo: 'Nissan Copetona',
+        tipo: 'Unidad Ligera Express',
         capacidad: '1.5 Toneladas',
         volumen: '14 m³',
         ideal: 'Fletes express y departamentos pequeños (1 recámara)',
         badgeColor: '#2563eb'
       },
       {
-        tipo: 'Camión Ford 350',
+        tipo: 'Camión Mediano de Carga',
         capacidad: '3.5 Toneladas',
         volumen: '26 m³',
         ideal: 'Casas medianas o departamentos de 2 a 3 recámaras',
         badgeColor: '#059669'
       },
       {
-        tipo: 'Camión Rabón Cerrado',
+        tipo: 'Camión Grande Cerrado',
         capacidad: '8.0 Toneladas',
         volumen: '50 m³',
         ideal: 'Residencias grandes, corporativos o traslados foráneos',
@@ -168,7 +168,7 @@ export const SITE_DATA = {
       {
         numero: '02',
         titulo: 'Operadores Identificados y Monitoreados',
-        descripcion: 'Contamos con un equipo humano de absoluta confianza, con años de experiencia operando rutas críticas y maniobras de carga en la Ciudad de México.'
+        descripcion: 'Contamos con un equipo humano de absoluta confianza, con años de experiencia operando rutas críticas y maniobras de carga.'
       },
       {
         numero: '03',
@@ -196,26 +196,26 @@ export const SITE_DATA = {
     testimonios: [
       {
         id: 1,
-        nombre: 'Carlos Mendoza',
-        ubicacion: 'Narvarte Poniente',
-        comentario: 'Tenía una mudanza urgente de Narvarte a Polanco en sábado. Llegaron a la hora acordada, protegieron mi sala y pantallas a la perfección. Gran servicio técnico.',
+        nombre: 'Carlos M.',
+        ubicacion: 'Zona Sur CDMX',
+        comentario: 'Tenía una mudanza urgente de un departamento a otro en sábado. Llegaron a la hora acordada, protegieron mi sala y pantallas a la perfección. Gran servicio técnico.',
         estrellas: '★★★★★',
         fecha: 'Hace 1 semana',
         servicio: 'Mudanza Residencial'
       },
       {
         id: 2,
-        nombre: 'Laura Beltrán',
-        ubicacion: 'Colonia Del Valle',
-        comentario: 'Excelente opción para mudanzas express en CDMX. El volado de mi refrigerador por el balcón lo hicieron súper rápido y sin ningún rasguño. Súper recomendados.',
+        nombre: 'Laura B.',
+        ubicacion: 'Zona Centro CDMX',
+        comentario: 'Excelente opción para mudanzas express. El volado de mi refrigerador por el balcón lo hicieron súper rápido y sin ningún rasguño. Súper recomendados.',
         estrellas: '★★★★★',
         fecha: 'Hace 2 semanas',
         servicio: 'Volado de Muebles'
       },
       {
         id: 3,
-        nombre: 'Ing. Fernando Rios',
-        ubicacion: 'Condesa / Roma',
+        nombre: 'Ing. Fernando R.',
+        ubicacion: 'Zona Poniente CDMX',
         comentario: 'Contratamos el servicio para mover la oficina corporativa. Puntuales, atentos y con facturación inmediata. Las unidades muy limpias y con GPS.',
         estrellas: '★★★★★',
         fecha: 'Hace 1 mes',
@@ -223,8 +223,8 @@ export const SITE_DATA = {
       },
       {
         id: 4,
-        nombre: 'Sofia Hernández',
-        ubicacion: 'Coyoacán',
+        nombre: 'Sofía H.',
+        ubicacion: 'Zona Norte CDMX',
         comentario: 'Todo llegó impecable. El personal fue sumamente respetuoso y cuidadoso con mis cosas frágiles. Volvería a contratarlos sin duda.',
         estrellas: '★★★★★',
         fecha: 'Hace 1 mes',
@@ -238,19 +238,19 @@ export const SITE_DATA = {
   // ----------------------------------------------------
   faqSection: {
     tagline: 'TRANSPARENCIA Y RESPUESTAS DIRECTAS',
-    titulo: 'Preguntas frecuentes sobre Mudanzas Express en CDMX',
+    titulo: 'Preguntas frecuentes sobre nuestros servicios de mudanza',
     preguntas: [
       {
         id: 1,
         abierta: true,
         titulo: '¿Cuánto cuesta un servicio de mudanza express básica en la CDMX?',
-        respuesta: 'Los precios de un flete o mudanza express varían según la distancia entre puntos, el volumen de los objetos y si se requieren maniobras complejas (como escaleras o volado de muebles). Contáctanos por WhatsApp para recibir una cotización transparente y parametrizada de inmediato.'
+        respuesta: 'Los precios de un flete o mudanza express varían según la distancia entre puntos, el volumen de los objetos y si se requieren maniobras complejas (como escaleras o volado de muebles). Contáctanos por WhatsApp para recibir una cotización transparente de inmediato.'
       },
       {
         id: 2,
         abierta: false,
-        titulo: '¿Cuáles son las zonas con mayor cobertura de Mudanzas Express?',
-        respuesta: 'Tenemos cobertura total en la Ciudad de México y área metropolitana, con presencia diaria destacada en Benito Juárez, Narvarte Oriente, Narvarte Poniente, Colonia Del Valle, Roma, Condesa, Coyoacán, Polanco, además de salidas a servicios foráneos a todo el país.'
+        titulo: '¿Cuáles son las zonas con mayor cobertura?',
+        respuesta: 'Tenemos cobertura total en toda la Ciudad de México y área metropolitana, además de salidas a servicios foráneos a todo el país.'
       },
       {
         id: 3,
@@ -262,7 +262,7 @@ export const SITE_DATA = {
         id: 4,
         abierta: false,
         titulo: '¿Con cuánto tiempo de anticipación debo agendar mi mudanza?',
-        respuesta: 'Recomendamos agendar con 2 a 5 días de anticipación para garantizar el horario de tu preferencia; sin embargo, contamos con unidades ágiles disponibles para servicios express urgentes el mismo día.'
+        respuesta: 'Recomendamos agendar con 2 a 5 días de anticipación para garantizar el horario de tu preferencia; sin embargo, contamos con unidades disponibles para servicios express urgentes el mismo día.'
       }
     ]
   },
@@ -271,22 +271,22 @@ export const SITE_DATA = {
   // 8. FOOTER Y DIRECTORIO
   // ----------------------------------------------------
   footer: {
-    bioEmpresa: 'Empresa líder en transportes de mudanza locales y fletes urgentes en la Ciudad de México. Seguridad, puntualidad y confianza en cada viaje.',
+    bioEmpresa: 'Empresa líder en transportes de mudanza locales y fletes urgentes. Seguridad, puntualidad y confianza en cada viaje.',
     tituloServicios: 'SERVICIOS LOGÍSTICOS',
     serviciosDirectorio: [
       'Mudanza Residencial Completa',
       'Fletes Express Urgentes',
-      'Volado de Muebles CDMX',
+      'Volado de Muebles',
       'Mudanza Corporativa'
     ],
     tituloCobertura: 'ZONAS DE COBERTURA',
     coberturaDirectorio: [
-      'Narvarte Poniente / Oriente',
-      'Colonia Del Valle / Roma / Condesa',
-      'Alcaldía Benito Juárez / CDMX',
+      'Zona Sur y Centro CDMX',
+      'Zona Poniente y Oriente CDMX',
+      'Área Metropolitana',
       'Servicios Foráneos Nacionales'
     ],
-    copyright: '© 2026 Mudanzas Express CDMX. Todos los derechos reservados.'
+    copyright: '© 2026 Mudanzas Express. Todos los derechos reservados.'
   },
 
   // ----------------------------------------------------
