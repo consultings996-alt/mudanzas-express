@@ -23,6 +23,30 @@ const origenCoords = ref(null)
 const destinoCoords = ref(null)
 const distanciaKm = ref(null)
 
+// Icono vectorial SVG profesional para el marcador GPS en Leaflet
+const vectorPinIcon = L.divIcon({
+  className: 'leaflet-vector-pin-container',
+  html: `
+    <div class="vector-pin-wrapper">
+      <svg width="40" height="52" viewBox="0 0 40 52" fill="none" xmlns="http://www.w3.org/2000/svg" class="vector-pin-svg">
+        <path d="M20 0C8.9543 0 0 8.9543 0 20C0 33.5 20 52 20 52C20 52 40 33.5 40 20C40 8.9543 31.0457 0 20 0Z" fill="url(#pinGrad)"/>
+        <circle cx="20" cy="19" r="8" fill="#FFFFFF"/>
+        <circle cx="20" cy="19" r="4.5" fill="#DC2626"/>
+        <defs>
+          <linearGradient id="pinGrad" x1="20" y1="0" x2="20" y2="52" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#EF4444"/>
+            <stop offset="1" stop-color="#B91C1C"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="vector-pin-shadow"></div>
+    </div>
+  `,
+  iconSize: [40, 52],
+  iconAnchor: [20, 52],
+  popupAnchor: [0, -52]
+})
+
 const calcularDistancia = (lat1, lon1, lat2, lon2) => {
   const R = 6371; 
   const dLat = (lat2 - lat1) * (Math.PI / 180);
@@ -69,7 +93,10 @@ const inicializarMapaModal = () => {
       attribution: '© OpenStreetMap'
     }).addTo(mapaModalInstancia)
 
-    marcadorModalInstancia = L.marker([latActual.value, lngActual.value], { draggable: true }).addTo(mapaModalInstancia)
+    marcadorModalInstancia = L.marker([latActual.value, lngActual.value], {
+      draggable: true,
+      icon: vectorPinIcon
+    }).addTo(mapaModalInstancia)
 
     marcadorModalInstancia.on('dragend', () => {
       const posicion = marcadorModalInstancia.getLatLng()
@@ -273,8 +300,8 @@ const enviarCotizacion = () => {
             <!-- Insignia de distancia en Km si ambos se calcularon -->
             <Transition name="fade">
               <div v-if="distanciaKm" class="distance-badge">
-                <span class="badge-icon">🛣️</span>
-                <span>Distancia estimada: <strong>{{ distanciaKm }} km</strong></span>
+                <span class="badge-icon">DISTANCIA ESTIMADA</span>
+                <span><strong>{{ distanciaKm }} km</strong></span>
               </div>
             </Transition>
 
@@ -522,6 +549,7 @@ const enviarCotizacion = () => {
 .map-input-wrapper input {
   cursor: pointer;
   padding-right: 2.5rem;
+  text-overflow: ellipsis;
 }
 
 .input-icon {
@@ -544,12 +572,11 @@ const enviarCotizacion = () => {
   padding: 0.8rem;
   border-radius: var(--radius-md);
   margin-bottom: 1.1rem;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   border: 1px solid #a7f3d0;
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  justify-content: space-between;
 }
 
 .form-group textarea {
@@ -722,6 +749,48 @@ const enviarCotizacion = () => {
   font-size: 0.82rem;
   color: var(--color-text-muted);
   font-weight: 600;
+}
+
+/* Estilos de la Píldora Vectorial SVG de Leaflet */
+:deep(.leaflet-vector-pin-container) {
+  background: transparent !important;
+  border: none !important;
+}
+
+:deep(.vector-pin-wrapper) {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: grab;
+  transition: transform 0.2s ease;
+}
+
+:deep(.vector-pin-wrapper:active) {
+  cursor: grabbing;
+  transform: scale(1.15) translateY(-6px);
+}
+
+:deep(.vector-pin-svg) {
+  display: block;
+  filter: drop-shadow(0 6px 12px rgba(220, 38, 38, 0.45));
+  animation: bounce-pin 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+:deep(.vector-pin-shadow) {
+  width: 18px;
+  height: 6px;
+  background: rgba(15, 23, 42, 0.35);
+  border-radius: 50%;
+  margin-top: -4px;
+  filter: blur(2px);
+}
+
+@keyframes bounce-pin {
+  0% { transform: translateY(-24px); opacity: 0; }
+  60% { transform: translateY(4px); opacity: 1; }
+  100% { transform: translateY(0); }
 }
 
 @media (max-width: 992px) {
