@@ -40,6 +40,7 @@ export const SITE_DATA = {
   navegacion: {
     links: [
       { id: 'inicio', texto: 'INICIO' },
+      { id: 'rastreo', texto: 'RASTREO' },
       { id: 'servicios', texto: 'SERVICIOS' },
       { id: 'garantia', texto: 'GARANTÍA' },
       { id: 'opiniones', texto: 'OPINIONES' },
@@ -76,6 +77,12 @@ export const SITE_DATA = {
       placeholderDetalles: 'Menciona si hay muebles pesados, cajas o mudanzas de última hora...',
       botonTexto: 'COTIZAR VÍA WHATSAPP EXPRESS 💬',
       notaPie: '⚡ Respuesta inmediata y presupuesto sin compromiso.',
+      labelFecha: 'FECHA DE LA MUDANZA',
+      labelHorario: 'HORARIO PREFERIDO',
+      horarios: ['07:00 – 10:00', '10:00 – 13:00', '13:00 – 16:00', '16:00 – 19:00', '19:00 – 21:00'],
+      tituloEstimacion: 'Tu estimado al instante',
+      notaEstimacion: 'Estimación informativa según tu ruta. El precio final se confirma por WhatsApp, sin compromiso.',
+      botonRastrear: 'RASTREAR MI MUDANZA (DEMO) 📍',
       opcionesServicio: [
         'Mudanza Residencial Completa',
         'Fletes y Traslados Express Urgentes',
@@ -83,6 +90,21 @@ export const SITE_DATA = {
         'Mudanza Corporativa y de Oficinas',
         'Traslado Foráneo Nacional'
       ]
+    },
+    // Estimación de precios de la demo (MXN). Base por servicio + por km
+    // después de los km incluidos. Solo informativo: el precio final se
+    // confirma por WhatsApp.
+    precios: {
+      basePorServicio: {
+        'Mudanza Residencial Completa': 1800,
+        'Fletes y Traslados Express Urgentes': 600,
+        'Maniobras Complejas y Volado de Muebles': 2400,
+        'Mudanza Corporativa y de Oficinas': 3200,
+        'Traslado Foráneo Nacional': 4500
+      },
+      kmIncluidos: 10,
+      precioPorKm: 28,
+      precioPorKmForaneo: 35
     }
   },
 
@@ -121,6 +143,34 @@ export const SITE_DATA = {
         titulo: 'Mudanzas Corporativas',
         descripcion: 'Traslado ágil de mobiliario de oficina, equipos de cómputo y archivo muerto con mínimo impacto en tu operación.',
         caracteristicas: ['Etiquetado de inventario', 'Atención fines de semana', 'Facturación disponible']
+      },
+      {
+        id: 'empaque',
+        icon: '🎁',
+        titulo: 'Empaque Profesional',
+        descripcion: 'Empacamos todo por ti: cajas, emplaye, protección de pantallas, cristalería y artículos frágiles con material incluido.',
+        caracteristicas: ['Cajas y material incluido', 'Protección de frágiles', 'Inventario por caja']
+      },
+      {
+        id: 'desarmado',
+        icon: '🔧',
+        titulo: 'Desarmado y Armado',
+        descripcion: 'Desarmamos camas, closets, libreros y muebles grandes para moverlos sin daño, y los volvemos a armar en tu nuevo hogar.',
+        caracteristicas: ['Herramienta especializada', 'Muebles armados al llegar', 'Sin daños garantizados']
+      },
+      {
+        id: 'bodegaje',
+        icon: '🏬',
+        titulo: 'Bodegaje y Almacenaje',
+        descripcion: '¿Tu nuevo hogar aún no está listo? Guardamos tus pertenencias en bodega segura y vigilada, por días o por meses.',
+        caracteristicas: ['Bodega vigilada 24/7', 'Por días o por meses', 'Acceso programado']
+      },
+      {
+        id: 'foranea',
+        icon: '🛣️',
+        titulo: 'Mudanza Foránea Nacional',
+        descripcion: 'Traslados a cualquier estado de la República con unidades cerradas, rastreo GPS y entrega programada puerta a puerta.',
+        caracteristicas: ['Cobertura nacional', 'Rastreo GPS en ruta', 'Entrega programada']
       }
     ],
 
@@ -149,6 +199,98 @@ export const SITE_DATA = {
         badgeColor: '#7c3aed'
       }
     ]
+  },
+
+  // ----------------------------------------------------
+  // 4b. CÓMO FUNCIONA (PASOS DEL SERVICIO)
+  // ----------------------------------------------------
+  comoFunciona: {
+    tagline: 'ASÍ DE FÁCIL ES MUDARTE',
+    titulo: 'De la cotización a tu puerta en 4 pasos',
+    pasos: [
+      {
+        numero: '01',
+        titulo: 'Cotiza en 1 minuto',
+        descripcion: 'Elige origen y destino en el mapa y recibe un estimado al instante, sin llamadas ni esperas.'
+      },
+      {
+        numero: '02',
+        titulo: 'Reserva tu fecha y hora',
+        descripcion: 'Elige el día y el horario que te convenga. Te confirmamos por WhatsApp en minutos.'
+      },
+      {
+        numero: '03',
+        titulo: 'Rastrea tu mudanza en vivo',
+        descripcion: 'Sigue a tu unidad en el mapa con GPS, con hora estimada de llegada y el estado de tu mudanza.'
+      },
+      {
+        numero: '04',
+        titulo: 'Entrega confirmada',
+        descripcion: 'Recibes tus pertenencias, las revisas con el operador y confirmas la entrega. Así de simple.'
+      }
+    ]
+  },
+
+  // ----------------------------------------------------
+  // 4c. COBERTURA
+  // ----------------------------------------------------
+  coberturaSection: {
+    tagline: 'COBERTURA TOTAL',
+    titulo: 'Llegamos a donde tú estés',
+    descripcion: 'Cobertura diaria en la Ciudad de México y área metropolitana, con salidas foráneas a toda la República Mexicana.',
+    zonas: [
+      {
+        nombre: 'CDMX Centro y Sur',
+        detalle: 'Benito Juárez, Coyoacán, Tlalpan, Xochimilco, Iztapalapa'
+      },
+      {
+        nombre: 'CDMX Poniente y Norte',
+        detalle: 'Miguel Hidalgo, Azcapotzalco, Gustavo A. Madero, Álvaro Obregón'
+      },
+      {
+        nombre: 'Área Metropolitana',
+        detalle: 'Ecatepec, Naucalpan, Tlalnepantla, Atizapán, Cuautitlán, Toluca'
+      },
+      {
+        nombre: 'Foráneo Nacional',
+        detalle: 'Puebla, Querétaro, Morelos, Veracruz, Guadalajara, Monterrey y todo México'
+      }
+    ],
+    nota: '¿Tu destino no aparece en la lista? Escríbenos por WhatsApp y te confirmamos cobertura y tarifa foránea.'
+  },
+
+  // ----------------------------------------------------
+  // 4d. RASTREO GPS EN VIVO
+  // ----------------------------------------------------
+  rastreoSection: {
+    tagline: 'RASTREO GPS EN VIVO',
+    titulo: '¿Dónde viene mi mudanza?',
+    descripcion: 'Con tu folio de servicio sigues a tu unidad en el mapa, minuto a minuto, con hora estimada de llegada y el estado de tu mudanza.',
+    notaDemo: 'Demo interactiva: el recorrido que ves es una simulación para mostrar cómo funciona el rastreo en vivo. En un servicio real, la ubicación es la de tu unidad asignada.',
+    folioEjemplo: 'MX-2026-0042',
+    estados: [
+      { id: 'confirmado', titulo: 'Servicio confirmado', descripcion: 'Tu mudanza está agendada y la unidad asignada.' },
+      { id: 'en-camino', titulo: 'En camino al origen', descripcion: 'La unidad va rumbo a tu domicilio para cargar.' },
+      { id: 'cargando', titulo: 'Cargando', descripcion: 'El equipo está cargando y protegiendo tus pertenencias.' },
+      { id: 'transito', titulo: 'En tránsito', descripcion: 'Tu mudanza va en camino al destino.' },
+      { id: 'entregado', titulo: 'Entregado', descripcion: 'Entrega completada y confirmada.' }
+    ]
+  },
+
+  // ----------------------------------------------------
+  // 4e. PAGOS Y FACTURACIÓN
+  // ----------------------------------------------------
+  pagosSection: {
+    tagline: 'PAGOS CLAROS Y SEGUROS',
+    titulo: 'Paga como te convenga',
+    descripcion: 'Sin anticipos escondidos ni cargos sorpresa. El precio que confirmamos por WhatsApp es el precio que pagas.',
+    metodos: [
+      { icono: '💵', titulo: 'Efectivo', descripcion: 'Paga al operador al finalizar la entrega.' },
+      { icono: '🏦', titulo: 'Transferencia / SPEI', descripcion: 'Aparta tu fecha con transferencia y liquida al entregar.' },
+      { icono: '💳', titulo: 'Tarjeta de crédito y débito', descripcion: 'Aceptamos Visa, Mastercard y American Express.' },
+      { icono: '📱', titulo: 'Mercado Pago', descripcion: 'Paga en línea con link seguro y comprobante digital.' }
+    ],
+    notaFacturacion: 'Facturación disponible para empresas y personas físicas. Pídela al confirmar tu servicio por WhatsApp.'
   },
 
   // ----------------------------------------------------
@@ -263,6 +405,18 @@ export const SITE_DATA = {
         abierta: false,
         titulo: '¿Con cuánto tiempo de anticipación debo agendar mi mudanza?',
         respuesta: 'Recomendamos agendar con 2 a 5 días de anticipación para garantizar el horario de tu preferencia; sin embargo, contamos con unidades disponibles para servicios express urgentes el mismo día.'
+      },
+      {
+        id: 5,
+        abierta: false,
+        titulo: '¿Puedo ver dónde viene mi mudanza en tiempo real?',
+        respuesta: 'Sí. Al confirmar tu servicio recibes un folio con el que puedes seguir a tu unidad en el mapa desde esta misma página, con hora estimada de llegada y el estado de tu mudanza en cada momento.'
+      },
+      {
+        id: 6,
+        abierta: false,
+        titulo: '¿Qué formas de pago aceptan y facturan?',
+        respuesta: 'Aceptamos efectivo, transferencia SPEI, tarjeta de crédito y débito y Mercado Pago. También emitimos factura para empresas y personas físicas; solo pídenosla al confirmar tu servicio por WhatsApp.'
       }
     ]
   },
@@ -277,7 +431,10 @@ export const SITE_DATA = {
       'Mudanza Residencial Completa',
       'Fletes Express Urgentes',
       'Volado de Muebles',
-      'Mudanza Corporativa'
+      'Mudanza Corporativa',
+      'Empaque Profesional',
+      'Bodegaje y Almacenaje',
+      'Mudanza Foránea Nacional'
     ],
     tituloCobertura: 'ZONAS DE COBERTURA',
     coberturaDirectorio: [
