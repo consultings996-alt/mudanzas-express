@@ -1,7 +1,10 @@
 <script setup>
-import { ref, nextTick, onUnmounted } from 'vue'
+import { ref, computed, nextTick, onUnmounted } from 'vue'
 import L from 'leaflet'
 import { SITE_DATA } from '../config/siteData.js'
+import { guardarRutaCotizada } from '../config/rutaCotizada.js'
+
+const emit = defineEmits(['ir-rastreo'])
 
 const nombre = ref('')
 const telefono = ref('')
@@ -9,6 +12,9 @@ const origenText = ref('')
 const destinoText = ref('')
 const servicio = ref(SITE_DATA.hero.formulario.opcionesServicio[0])
 const detalles = ref('')
+const fecha = ref('')
+const horario = ref(SITE_DATA.hero.formulario.horarios[1])
+const cotizacionEnviada = ref(false)
 
 const mostrarMapaModal = ref(false)
 const cargandoGPS = ref(false)
@@ -22,6 +28,43 @@ const lngActual = ref(-99.133208)
 const origenCoords = ref(null)
 const destinoCoords = ref(null)
 const distanciaKm = ref(null)
+
+// Fecha mínima: hoy (formato local YYYY-MM-DD)
+const fechaMinima = computed(() => {
+  const hoy = new Date()
+  const y = hoy.getFullYear()
+  const m = String(hoy.getMonth() + 1).padStart(2, '0')
+  const d = String(hoy.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+})
+
+// Estimación informativa: base por servicio + km extra después de los incluidos
+const estimacion = computed(() => {
+  if (!distanciaKm.value) return null
+  const precios = SITE_DATA.hero.precios
+  const base = precios.basePorServicio[servicio.value] ?? 1800
+  const km = parseFloat(distanciaKm.value)
+  const porKm =
+    servicio.value === 'Traslado Foráneo Nacional'
+      ? precios.precioPorKmForaneo
+      : precios.precioPorKm
+  const extra = Math.max(0, km - precios.kmIncluidos) * porKm
+  const total = base + extra
+  const redondear50 = (n) => Math.round(n / 50) * 50
+  return {
+    min: redondear50(total * 0.9),
+    max: redondear50(total * 1.1),
+    total: Math.round(total)
+  }
+})
+
+const fechaFormateada = computed(() => {
+  if (!fecha.value) return 'A convenir'
+  const [y, m, d] = fecha.value.split('-')
+  return `${d}/${m}/${y}`
+})
+
+const formatoMoneda = (n) => `$${n.toLocaleString('es-MX')} MXN`
 
 // Icono vectorial SVG profesional para el marcador GPS en Leaflet
 const vectorPinIcon = L.divIcon({
@@ -183,13 +226,27 @@ onUnmounted(() => {
 })
 
 const enviarCotizacion = () => {
+  // Guardar la ruta para que la vista de rastreo la pueda animar
+  if (origenCoords.value && destinoCoords.value) {
+    guardarRutaCotizada({
+      origen: { lat: origenCoords.value.lat, lng: origenCoords.value.lng, texto: origenText.value },
+      destino: { lat: destinoCoords.value.lat, lng: destinoCoords.value.lng, texto: destinoText.value },
+      distanciaKm: distanciaKm.value,
+      servicio: servicio.value
+    })
+  }
   const linkOrigen = origenCoords.value ? `https://www.google.com/maps/search/?api=1&query=${origenCoords.value.lat},${origenCoords.value.lng}` : 'No especificado'
   const linkDestino = destinoCoords.value ? `https://www.google.com/maps/search/?api=1&query=${destinoCoords.value.lat},${destinoCoords.value.lng}` : 'No especificado'
   const textoDistancia = distanciaKm.value ? `${distanciaKm.value} km aprox.` : 'No calculada'
   
+  const textoEstimado = estimacion.value
+    ? `${formatoMoneda(estimacion.value.min)} – ${formatoMoneda(estimacion.value.max)} (estimado)`
+    : 'Sin estimar (falta ruta)'
   const mensaje = `¡Nueva solicitud de cotización!\n\n` +
                   `👤 *Cliente:* ${nombre.value}\n` +
                   `📞 *WhatsApp:* ${telefono.value}\n` +
+                  `📅 *Fecha:* ${fechaFormateada.value} · ${horario.value}\n` +
+                  `💰 *Estimado:* ${textoEstimado}\n` +
                   `🛫 *Origen:* ${origenText.value}\n` +
                   `📍 *Mapa Origen:* ${linkOrigen}\n\n` +
                   `🛬 *Destino:* ${destinoText.value}\n` +
@@ -199,6 +256,7 @@ const enviarCotizacion = () => {
                   `📝 *Detalles:* ${detalles.value || 'Ninguno'}`
 
   window.open(`https://wa.me/${SITE_DATA.empresa.whatsappNumero}?text=${encodeURIComponent(mensaje)}`, '_blank')
+  cotizacionEnviada.value = true
 }
 </script>
 
@@ -305,6 +363,16 @@ const enviarCotizacion = () => {
               </div>
             </Transition>
 
+            <Transition name="fade">
+              <div v-if="estimacion" class="estimate-card">
+                <span class="estimate-label">{{ SITE_DATA.hero.formulario.tituloEstimacion }}</span>
+                <strong class="estimate-price">
+                  {{ formatoMoneda(estimacion.min) }} – {{ formatoMoneda(estimacion.max) }}
+                </strong>
+                <span class="estimate-note">{{ SITE_DATA.hero.formulario.notaEstimacion }}</span>
+              </div>
+            </Transition>
+
             <div class="form-group">
               <label>{{ SITE_DATA.hero.formulario.labelServicio }}</label>
               <select v-model="servicio">
@@ -312,6 +380,26 @@ const enviarCotizacion = () => {
                   {{ opc }}
                 </option>
               </select>
+            </div>
+
+            <div class="split-row">
+              <div class="form-group" style="flex:1">
+                <label>{{ SITE_DATA.hero.formulario.labelFecha }}</label>
+                <input
+                  v-model="fecha"
+                  type="date"
+                  :min="fechaMinima"
+                >
+              </div>
+
+              <div class="form-group" style="flex:1">
+                <label>{{ SITE_DATA.hero.formulario.labelHorario }}</label>
+                <select v-model="horario">
+                  <option v-for="(h, idx) in SITE_DATA.hero.formulario.horarios" :key="idx" :value="h">
+                    {{ h }}
+                  </option>
+                </select>
+              </div>
             </div>
 
             <div class="form-group">
@@ -326,6 +414,16 @@ const enviarCotizacion = () => {
               {{ SITE_DATA.hero.formulario.botonTexto }}
             </button>
             <p class="form-footer-note">{{ SITE_DATA.hero.formulario.notaPie }}</p>
+
+            <Transition name="fade">
+              <div v-if="cotizacionEnviada" class="quote-sent">
+                <p>✅ <strong>¡Solicitud enviada por WhatsApp!</strong> Te confirmamos precio y
+                disponibilidad en minutos.</p>
+                <button type="button" class="btn-track" @click="emit('ir-rastreo')">
+                  {{ SITE_DATA.hero.formulario.botonRastrear }}
+                </button>
+              </div>
+            </Transition>
           </form>
         </div>
       </div>
@@ -582,6 +680,65 @@ const enviarCotizacion = () => {
 .form-group textarea {
   height: 70px;
   resize: none;
+}
+
+.estimate-card {
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  padding: 1rem 1.1rem;
+  margin-bottom: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.estimate-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--color-primary);
+}
+
+.estimate-price {
+  font-size: 1.35rem;
+  font-family: var(--font-title);
+  color: var(--color-dark);
+}
+
+.estimate-note {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  line-height: 1.45;
+}
+
+.quote-sent {
+  margin-top: 1rem;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: var(--radius-md);
+  padding: 1rem 1.1rem;
+  font-size: 0.9rem;
+  color: #065f46;
+  line-height: 1.5;
+}
+
+.btn-track {
+  margin-top: 0.8rem;
+  width: 100%;
+  background: var(--color-dark);
+  color: #ffffff;
+  border: none;
+  padding: 0.85rem;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-track:hover {
+  background: var(--color-primary);
 }
 
 .btn-submit {

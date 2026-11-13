@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { SITE_DATA } from './config/siteData.js'
 import HeroForm from './components/HeroForm.vue'
+import TrackingView from './components/TrackingView.vue'
 import Services from './components/Services.vue'
 import Warranty from './components/Warranty.vue'
 import Opinions from './components/Opinions.vue'
@@ -69,7 +70,8 @@ const cambiarVista = (vista) => {
     <main class="main-content">
       <Transition name="fade" mode="out-in">
         <div :key="vistaActual" class="view-wrapper">
-          <HeroForm v-if="vistaActual === 'inicio'" />
+          <HeroForm v-if="vistaActual === 'inicio'" @ir-rastreo="cambiarVista('rastreo')" />
+          <TrackingView v-else-if="vistaActual === 'rastreo'" />
           <Services v-else-if="vistaActual === 'servicios'" />
           <Warranty v-else-if="vistaActual === 'garantia'" />
           <Opinions v-else-if="vistaActual === 'opiniones'" />
