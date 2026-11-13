@@ -125,12 +125,14 @@ const cambiarVista = (vista) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 2rem;
   padding: 1.1rem 5%;
 }
 
 .logo-wrapper {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 0.6rem;
   cursor: pointer;
   user-select: none;
@@ -152,11 +154,13 @@ const cambiarVista = (vista) => {
   font-weight: 800;
   color: var(--color-dark);
   letter-spacing: -0.03em;
+  white-space: nowrap;
 }
 
 .main-nav {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
   gap: 2.2rem;
 }
 
@@ -166,6 +170,7 @@ const cambiarVista = (vista) => {
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.05em;
+  white-space: nowrap;
   transition: all 0.25s ease;
   position: relative;
   padding: 0.4rem 0;
@@ -249,7 +254,21 @@ const cambiarVista = (vista) => {
   display: none;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 1280px) {
+  .logo-text {
+    font-size: 1.4rem;
+  }
+
+  .main-nav {
+    gap: 1.5rem;
+  }
+
+  .btn-nav-cotizar {
+    padding: 0.7rem 1.2rem;
+  }
+}
+
+@media (max-width: 1150px) {
   .hamburger {
     display: flex;
   }
