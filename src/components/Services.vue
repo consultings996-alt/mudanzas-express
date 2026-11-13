@@ -84,6 +84,55 @@ import { SITE_DATA } from '../config/siteData.js'
         </div>
       </div>
 
+      <!-- Cómo funciona: 4 pasos -->
+      <div class="steps-section">
+        <div class="header-block">
+          <span class="tagline">{{ SITE_DATA.comoFunciona.tagline }}</span>
+          <h2>{{ SITE_DATA.comoFunciona.titulo }}</h2>
+        </div>
+        <div class="steps-grid">
+          <div v-for="paso in SITE_DATA.comoFunciona.pasos" :key="paso.numero" class="step-card">
+            <span class="step-number">{{ paso.numero }}</span>
+            <h3>{{ paso.titulo }}</h3>
+            <p>{{ paso.descripcion }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cobertura -->
+      <div class="coverage-section">
+        <div class="header-block">
+          <span class="tagline">{{ SITE_DATA.coberturaSection.tagline }}</span>
+          <h2>{{ SITE_DATA.coberturaSection.titulo }}</h2>
+          <p class="section-desc">{{ SITE_DATA.coberturaSection.descripcion }}</p>
+        </div>
+        <div class="coverage-grid">
+          <div v-for="zona in SITE_DATA.coberturaSection.zonas" :key="zona.nombre" class="coverage-card">
+            <span class="coverage-icon">📍</span>
+            <h3>{{ zona.nombre }}</h3>
+            <p>{{ zona.detalle }}</p>
+          </div>
+        </div>
+        <p class="coverage-note">{{ SITE_DATA.coberturaSection.nota }}</p>
+      </div>
+
+      <!-- Pagos -->
+      <div class="payments-section">
+        <div class="header-block">
+          <span class="tagline">{{ SITE_DATA.pagosSection.tagline }}</span>
+          <h2>{{ SITE_DATA.pagosSection.titulo }}</h2>
+          <p class="section-desc">{{ SITE_DATA.pagosSection.descripcion }}</p>
+        </div>
+        <div class="payments-grid">
+          <div v-for="metodo in SITE_DATA.pagosSection.metodos" :key="metodo.titulo" class="payment-card">
+            <span class="payment-icon">{{ metodo.icono }}</span>
+            <h3>{{ metodo.titulo }}</h3>
+            <p>{{ metodo.descripcion }}</p>
+          </div>
+        </div>
+        <p class="payments-note">🧾 {{ SITE_DATA.pagosSection.notaFacturacion }}</p>
+      </div>
+
     </div>
   </section>
 </template>
@@ -288,7 +337,142 @@ h2 {
   display: none;
 }
 
+/* Cómo funciona */
+.steps-section {
+  margin-top: 5.5rem;
+}
+
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.6rem;
+}
+
+.step-card {
+  background: var(--color-bg-light);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.8rem;
+  position: relative;
+}
+
+.step-number {
+  font-size: 2.4rem;
+  font-weight: 800;
+  font-family: var(--font-title);
+  color: rgba(220, 38, 38, 0.15);
+  line-height: 1;
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.step-card h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.step-card p {
+  color: var(--color-text-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+}
+
+/* Cobertura */
+.coverage-section {
+  margin-top: 5.5rem;
+}
+
+.coverage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.6rem;
+}
+
+.coverage-card {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.8rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.coverage-icon {
+  font-size: 1.6rem;
+  display: block;
+  margin-bottom: 0.8rem;
+}
+
+.coverage-card h3 {
+  font-size: 1.15rem;
+  margin-bottom: 0.4rem;
+}
+
+.coverage-card p {
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.coverage-note {
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  margin-top: 2rem;
+}
+
+/* Pagos */
+.payments-section {
+  margin-top: 5.5rem;
+  background: var(--color-bg-light);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: 3rem;
+}
+
+.payments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.6rem;
+}
+
+.payment-card {
+  background: #ffffff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.6rem;
+  text-align: center;
+}
+
+.payment-icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.7rem;
+}
+
+.payment-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.4rem;
+}
+
+.payment-card p {
+  color: var(--color-text-muted);
+  font-size: 0.88rem;
+  line-height: 1.55;
+}
+
+.payments-note {
+  text-align: center;
+  font-weight: 700;
+  color: var(--color-dark);
+  font-size: 0.95rem;
+  margin-top: 2rem;
+}
+
 @media (max-width: 992px) {
+  .payments-section {
+    padding: 2rem 1.5rem;
+  }
+
   .fleet-container {
     padding: 2rem 1.5rem;
   }
